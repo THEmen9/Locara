@@ -904,6 +904,7 @@ footer { flex-shrink: 0; }
 .card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
 /* Action buttons */
+
 .action-btn {
   display: inline-flex;
   align-items: center;
@@ -1133,6 +1134,7 @@ footer { flex-shrink: 0; }
   border-color:#6366f1;
   box-shadow:0 0 0 3px rgba(99,102,241,.12);
 }
+
 /* ════════════════════════════════════════════════════════════
    AUTH
 ════════════════════════════════════════════════════════════ */
@@ -1294,6 +1296,7 @@ footer { flex-shrink: 0; }
 }
 
 /* Forgot password link */
+
 .auth-forgot {
   font-size: 0.78rem;
   color: #999;
@@ -1376,6 +1379,12 @@ footer { flex-shrink: 0; }
   overflow: hidden;
   transition: transform 0.6s ease-in-out;
   z-index: 100;
+  pointer-events:none;
+
+}
+
+.auth-overlay-panel button{
+  pointer-events:auto;
 }
 
 /* Overlay slides LEFT when right-panel-active */
@@ -1510,6 +1519,244 @@ footer { flex-shrink: 0; }
   .right-panel-active .auth-sign-in { display: none; transform: none; }
   .right-panel-active .auth-sign-up { display: block; transform: none; }
   .auth-form-inner        { padding: 36px 28px; }
+}
+
+/* Forgot panel on mobile — full width overlay */
+
+  .auth-forgot{
+  position:relative;
+  z-index:200;
+  }
+
+  .auth-forgot-panel {
+    width: 100%;
+    border-radius: 16px;
+  }
+
+/* ══════════════════════════════════════════════════════════
+   FORGOT PASSWORD PANEL
+   A floating panel that slides up over the auth-container
+   when "Forgot your password?" is clicked.
+   Uses transform: translateY(100%) → translateY(0) so it
+   rises from below the card — distinct from the left/right
+   overlay so there's no visual clash.
+   z-index: 200 sits above the overlay (z-index: 100).
+══════════════════════════════════════════════════════════ */
+.auth-forgot-panel {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  z-index: 200;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 52px 48px;
+  text-align: center;
+
+  /* Start below the card, animate up */
+  transform: translateY(100%);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+/* Active — slides up into view */
+.auth-forgot-panel.active {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Animated indigo top accent bar */
+.auth-forgot-panel::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #6366f1, #7c3aed);
+  background-size: 200% 100%;
+  animation: gradientBar 3s linear infinite;
+  border-radius: 20px 20px 0 0;
+}
+@keyframes gradientBar {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+/* Icon circle */
+.forgot-icon {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(124,58,237,0.08));
+  border: 2px solid rgba(99,102,241,0.2);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 1.6rem;
+  animation: iconPulse 2s ease-in-out infinite;
+}
+@keyframes iconPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.15); }
+  50%       { box-shadow: 0 0 0 10px rgba(99,102,241,0); }
+}
+
+.auth-forgot-panel h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+
+.auth-forgot-panel .forgot-sub {
+  font-size: 0.83rem;
+  color: #64748b;
+  line-height: 1.65;
+  margin-bottom: 28px;
+  max-width: 280px;
+}
+
+/* Email input inside forgot panel — same style as auth inputs */
+.auth-forgot-panel .form-control {
+  display: block; width: 100%; height: 44px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  padding: 0 16px;
+  font-size: 0.88rem; color: #0f172a;
+  font-family: 'DM Sans', sans-serif;
+  outline: none; margin-bottom: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.auth-forgot-panel .form-control::placeholder { color: #94a3b8; }
+.auth-forgot-panel .form-control:focus {
+  border-color: #6366f1;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+}
+
+/* Send button */
+.auth-forgot-panel .auth-btn {
+  width: 100%;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  letter-spacing: 0.08em;
+}
+
+/* Back link */
+.forgot-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  text-decoration: none;
+  cursor: pointer;
+  border: none; background: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: color 0.2s, gap 0.2s;
+}
+.forgot-back-link:hover { color: #6366f1; gap: 10px; }
+
+/* Success state inside forgot panel */
+.forgot-success-state {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  animation: successPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.forgot-success-state.visible { display: flex; }
+@keyframes successPop {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.forgot-success-icon {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(135deg, #10b981, #059669);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; color: #fff; margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(16,185,129,0.3);
+}
+.forgot-success-state h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem; font-weight: 700; color: #0f172a;
+  margin-bottom: 8px;
+}
+.forgot-success-state p {
+  font-size: 0.82rem; color: #64748b; line-height: 1.6;
+  max-width: 260px; margin-bottom: 20px;
+}
+
+/* ── Reset password page (standalone) ── */
+.reset-page {
+  min-height: calc(100vh - var(--navbar-h));
+  display: flex; justify-content: center; align-items: center;
+  padding: 32px 16px;
+  background: #f6f5f7;
+}
+.reset-card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 14px 28px rgba(0,0,0,0.1), 0 8px 10px rgba(0,0,0,0.06);
+  padding: 52px 48px;
+  width: 100%; max-width: 440px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: authContainerIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+.reset-card::before {
+  content: "";
+  position: absolute; top:0; left:0; right:0; height:4px;
+  background: linear-gradient(90deg, #667eea, #6366f1, #7c3aed);
+  background-size: 200% 100%;
+  animation: gradientBar 3s linear infinite;
+}
+.reset-card h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem; font-weight: 800; color: #0f172a;
+  margin-bottom: 8px; letter-spacing: -0.02em;
+}
+.reset-card .reset-sub {
+  font-size: 0.83rem; color: #64748b;
+  line-height: 1.65; margin-bottom: 28px;
+}
+.reset-card .form-control {
+  display: block; width: 100%; height: 44px;
+  border-radius: 10px; border: 1.5px solid #e2e8f0;
+  background: #f8fafc; padding: 0 16px;
+  font-size: 0.88rem; color: #0f172a;
+  font-family: 'DM Sans', sans-serif;
+  outline: none; margin-bottom: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.reset-card .form-control::placeholder { color: #94a3b8; }
+.reset-card .form-control:focus {
+  border-color: #6366f1; background: #fff;
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+}
+/* Password strength bar */
+.strength-bar-wrap {
+  height: 4px; border-radius: 4px;
+  background: #e2e8f0; margin-bottom: 20px;
+  overflow: hidden;
+}
+.strength-bar {
+  height: 100%; width: 0;
+  border-radius: 4px;
+  transition: width 0.35s ease, background-color 0.35s ease;
+}
+.strength-label {
+  font-size: 0.72rem; color: #94a3b8;
+  margin-top: -14px; margin-bottom: 16px;
+  text-align: left;
+}
+.reset-card .auth-btn {
+  width: 100%; padding: 13px;
+  border-radius: 12px; font-size: 0.88rem;
+  letter-spacing: 0.06em;
 }
 
 /* ══════════════════════════════════════════════

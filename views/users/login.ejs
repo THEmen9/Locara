@@ -1,3 +1,347 @@
+<%# ──────────────────────────────────────────────────────────
+    LOGIN PAGE — views/auth/login.ejs  (or views/users/login.ejs)
+    Split-panel sliding card — matches reference video exactly.
+    
+    Structure:
+      .auth-container
+        .auth-sign-in      ← visible by default (left panel)
+        .auth-sign-up      ← hidden behind overlay (left side, slides right)
+        .auth-overlay-container  ← sits at right 50%, slides left on signup
+          .auth-overlay
+            .auth-overlay-left   ← "Welcome Back!" (shown when signup active)
+            .auth-overlay-right  ← "Hey There!"    (shown when login active)
+        .auth-forgot-panel ← slides UP from below on "Forgot?" click (z:200)
+    
+    JS: clicking ghost buttons adds/removes .right-panel-active on
+        .auth-container. All CSS transitions handle the rest.
+        
+    Form action: POST /login (existing route, unchanged)
+    Fetch: existing JS fetch handler preserved below
+────────────────────────────────────────────────────────── %>
+
+<div class="auth-page">
+  <div class="auth-container" id="authContainer">
+
+    <%# ─── SIGN-IN FORM (left, visible by default) ─── %>
+    <div class="auth-form-container auth-sign-in">
+      <div class="auth-form-inner">
+        <h1>Sign In</h1>
+
+        <div class="auth-social-row">
+          <button type="button" class="auth-social-btn" title="Facebook">f</button>
+          <button type="button" class="auth-social-btn" title="Google">G</button>
+          <button type="button" class="auth-social-btn" title="LinkedIn">in</button>
+        </div>
+
+        <p class="auth-divider">or use your account</p>
+
+        <form id="loginForm" style="width:100%;">
+          <div id="loginMessage"></div>
+
+          <div class="mb-3">
+            <input
+              type="text"
+              name="username"
+              class="form-control"
+              placeholder="Username"
+              required>
+          </div>
+
+          <div class="mb-3">
+            <input
+              type="password"
+              name="password"
+              class="form-control"
+              placeholder="Password"
+              required>
+          </div>
+
+          <%# Forgot link — triggers the panel, does NOT navigate %>
+          <a href="#" class="auth-forgot" id="openForgot">
+            Forgot your password?
+          </a>
+
+          <button type="submit" class="auth-btn">Sign In</button>
+        </form>
+      </div>
+    </div>
+
+    <%# ─── SIGN-UP FORM (hidden, slides in from left) ─── %>
+    <div class="auth-form-container auth-sign-up">
+      <div class="auth-form-inner">
+        <h1>Create Account</h1>
+
+        <div class="auth-social-row">
+          <button type="button" class="auth-social-btn" title="Facebook">f</button>
+          <button type="button" class="auth-social-btn" title="Google">G</button>
+          <button type="button" class="auth-social-btn" title="LinkedIn">in</button>
+        </div>
+
+        <p class="auth-divider">or use your email for registration</p>
+
+        <form action="/signup" method="POST" style="width:100%;" id="signupFormEmbedded">
+          <div class="mb-3">
+            <input
+              type="text"
+              name="username"
+              class="form-control"
+              placeholder="Full Name"
+              required>
+          </div>
+
+          <div class="mb-3">
+            <input
+              type="email"
+              name="email"
+              class="form-control"
+              placeholder="Email Address"
+              required>
+          </div>
+
+          <div class="mb-3">
+            <input
+              type="password"
+              name="password"
+              class="form-control"
+              placeholder="Password"
+              required>
+          </div>
+
+          <button type="submit" class="auth-btn">Sign Up</button>
+        </form>
+      </div>
+    </div>
+
+    <%# ─── SLIDING OVERLAY ─── %>
+    <div class="auth-overlay-container">
+      <div class="auth-overlay">
+
+        <div class="auth-overlay-panel auth-overlay-left">
+          <h1>Welcome Back!</h1>
+          <p>Stay connected by logging in with your credentials and continue your experience</p>
+          <button class="auth-ghost-btn" id="signInBtn">Sign In</button>
+        </div>
+
+        <div class="auth-overlay-panel auth-overlay-right">
+          <h1>Hey There!</h1>
+          <p>Begin your amazing journey by creating an account with us today</p>
+          <button class="auth-ghost-btn" id="signUpBtn">Sign Up</button>
+        </div>
+
+      </div>
+    </div>
+
+    <%# ─────────────────────────────────────────────────────
+        FORGOT PASSWORD PANEL
+        Slides up from below (translateY 100% → 0).
+        z-index: 200 — sits above overlay (z: 100).
+        Two internal states:
+          1. Form state  — shows email input + send button
+          2. Success state — shows confirmation message
+    ───────────────────────────────────────────────────── %>
+    <div class="auth-forgot-panel" id="forgotPanel">
+
+      <%# Form state (default) %>
+      <div id="forgotFormState">
+        <div class="forgot-icon">📧</div>
+
+        <h2>Reset Password</h2>
+        <p class="forgot-sub">
+          Enter the email address linked to your account and
+          we'll send you a reset link.
+        </p>
+
+        <form id="forgotForm" style="width:100%; max-width:320px;">
+          <input
+            type="email"
+            id="forgotEmail"
+            class="form-control"
+            placeholder="Enter your email address"
+            required>
+
+          <button type="submit" class="auth-btn" id="forgotSubmitBtn">
+            Send Reset Link
+          </button>
+        </form>
+
+        <button class="forgot-back-link" id="closeForgot">
+          ← Back to Sign In
+        </button>
+      </div>
+
+      <%# Success state (shown after email sent) %>
+      <div class="forgot-success-state" id="forgotSuccess">
+        <div class="forgot-success-icon">✓</div>
+        <h3>Check your inbox!</h3>
+        <p>
+          A password reset link has been sent to your email.
+          It will expire in <strong>15 minutes</strong>.
+        </p>
+        <button class="auth-ghost-btn" id="backToLoginBtn"
+          style="background:#6366f1; border-color:#6366f1; color:#fff; border-radius:12px; padding:11px 32px;">
+          Back to Sign In
+        </button>
+      </div>
+
+    </div>
+
+  </div><!-- /.auth-container -->
+</div><!-- /.auth-page -->
+
+<%# ─── TOGGLE SCRIPT ─── %>
+<script>
+(function () {
+  const container     = document.getElementById("authContainer");
+  const forgotPanel   = document.getElementById("forgotPanel");
+  const openForgot    = document.getElementById("openForgot");
+  const closeForgot   = document.getElementById("closeForgot");
+  const backToLogin   = document.getElementById("backToLoginBtn");
+  const signUpBtn     = document.getElementById("signUpBtn");
+  const signInBtn     = document.getElementById("signInBtn");
+
+  /* ── Panel toggle ── */
+  if (signUpBtn) signUpBtn.addEventListener("click", () => container.classList.add("right-panel-active"));
+  if (signInBtn) signInBtn.addEventListener("click", () => container.classList.remove("right-panel-active"));
+
+  /* ── Open forgot panel ── */
+  if (openForgot) openForgot.addEventListener("click", () => {
+    forgotPanel.classList.add("active");
+  });
+
+  /* ── Close forgot panel ── */
+  function closeForgotPanel() {
+    forgotPanel.classList.remove("active");
+    /* Reset to form state after animation completes */
+    setTimeout(() => resetForgotState(), 500);
+  }
+
+  if (closeForgot)  closeForgot.addEventListener("click",  closeForgotPanel);
+  if (backToLogin)  backToLogin.addEventListener("click",  closeForgotPanel);
+
+  function resetForgotState() {
+    document.getElementById("forgotFormState").style.display = "";
+    document.getElementById("forgotSuccess").classList.remove("visible");
+    document.getElementById("forgotEmail").value = "";
+    const btn = document.getElementById("forgotSubmitBtn");
+    if (btn) { btn.classList.remove("loading"); btn.textContent = "Send Reset Link"; }
+  }
+}());
+</script>
+
+<%# ─── FORGOT PASSWORD FORM SUBMIT ─── %>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const forgotForm = document.getElementById("forgotForm");
+  if (!forgotForm) return;
+
+  forgotForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById("forgotEmail").value.trim();
+    const btn   = document.getElementById("forgotSubmitBtn");
+
+    /* Loading state */
+    btn.classList.add("loading");
+    btn.textContent = "Sending…";
+
+    try {
+      const res = await fetch("/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await res.json();
+
+      /* Always show success state — prevents email enumeration */
+      document.getElementById("forgotFormState").style.display = "none";
+      document.getElementById("forgotSuccess").classList.add("visible");
+
+    } catch (err) {
+      /* Network error fallback */
+      document.getElementById("forgotFormState").style.display = "none";
+      document.getElementById("forgotSuccess").classList.add("visible");
+    }
+  });
+});
+</script>
+
+<%# ─── LOGIN FETCH HANDLER (existing logic, preserved exactly) ─── %>
+<script>
+  console.log("LOGIN SCRIPT LOADED");
+document.addEventListener("DOMContentLoaded", function(){
+
+  const form = document.getElementById("loginForm");
+
+  form.addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    const btn = this.querySelector(".auth-btn");
+    if (btn) {
+      btn.classList.add("loading");
+      btn.dataset.originalText = btn.textContent.trim();
+      btn.textContent = "Signing in…";
+    }
+
+    const data = {
+      username: this.username.value,
+      password: this.password.value
+    };
+
+    const response = await fetch("/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if(result.success){
+      const username = form.username.value;
+      showToast(`Welcome back, ${username}!`, "success");
+      setTimeout(()=>{
+        window.location.href = "/listings";
+      }, 1200);
+    } else {
+      showToast(result.message, "error");
+      if (btn) {
+        btn.classList.remove("loading");
+        btn.textContent = btn.dataset.originalText || "Sign In";
+      }
+    }
+  });
+});
+
+function showToast(message, type){
+  document.querySelectorAll(".custom-toast").forEach(t => t.remove());
+  const popup = document.createElement("div");
+  popup.className = "custom-toast " + type;
+  popup.innerText = message;
+  document.body.appendChild(popup);
+  setTimeout(()=> popup.classList.add("show"), 50);
+  setTimeout(()=>{
+    popup.classList.remove("show");
+    setTimeout(()=> popup.remove(), 300);
+  }, 2500);
+}
+</script>
+
+<%# ─── SIGNUP LOADING STATE ─── %>
+<script>
+(function () {
+  const signupForm = document.getElementById("signupFormEmbedded");
+  if (!signupForm) return;
+  signupForm.addEventListener("submit", function () {
+    const btn = this.querySelector(".auth-btn");
+    if (!btn) return;
+    btn.classList.add("loading");
+    btn.textContent = "Creating account…";
+  });
+}());
+</script>
 
 <div class="auth-page">
   <div class="auth-container" id="authContainer">

@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
       required: true,
       unique: true
    },
+      
    password: {
       type: String,
       required: true
@@ -20,7 +21,13 @@ const userSchema = new mongoose.Schema({
    type: String,
    enum: ["user", "dev"],
    default: "user"
-  }
+  },
+   resetPasswordToken: {
+      type: String
+   },
+   resetPasswordExpiry: {
+      type: Date
+   }
 });
 
 // hash password before save
@@ -35,4 +42,4 @@ userSchema.methods.comparePassword = async function(password){
    return bcrypt.compare(password, this.password);
 };
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.models.User || mongoose.model("User", userSchema);

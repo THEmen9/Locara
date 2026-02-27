@@ -1,7 +1,10 @@
-// require("dotenv").config();
+require("dotenv").config();
+console.log("SMTP_USER:", process.env.SMTP_USER);
+console.log("SMTP_PASS:", process.env.SMTP_PASS);
 const express = require("express");
 const mongoose = require("mongoose");
 console.log("Mongoose runtime version:", mongoose.version);
+
 
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
@@ -12,6 +15,8 @@ const flash = require("connect-flash");
 
 
 const passport = require("passport");
+
+
 
 const listingRoutes = require("./routes/listings");
 const userRoutes = require("./routes/users");
@@ -96,7 +101,13 @@ app.use((req, res, next) => {
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
 // Routes
+
+const forgotRoutes = require("./routes/forgotPassword");
+
+app.use("/", forgotRoutes);
+
 app.use("/", userRoutes);
 
 app.use("/listings", listingRoutes);

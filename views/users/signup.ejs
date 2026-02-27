@@ -34,13 +34,27 @@
               required>
           </div>
 
-          <a href="/login" class="auth-forgot">Forgot your password?</a>
+          <a href="#" class="auth-forgot">Forgot your password?</a>
 
           <button type="submit" class="auth-btn">Sign In</button>
         </form>
       </div>
     </div>
 
+    <div class="auth-forgot-panel" id="forgotPanel">
+
+      <div class="auth-form-inner">
+        <h2>Reset Password</h2>
+
+        <form id="forgotForm">
+          <input type="email" id="forgotEmail" class="form-control" placeholder="Enter email" required>
+          <button class="auth-btn" type="submit">Send Reset Link</button>
+        </form>
+
+        <button id="closeForgot" class="auth-ghost-btn">Back</button>
+      </div>
+
+</div>
     <%# ─── SIGN-UP FORM (visible by default on this page) ─── %>
     <div class="auth-form-container auth-sign-up">
       <div class="auth-form-inner">
@@ -106,10 +120,24 @@
       </div>
     </div>
 
-  </div>
-</div>
+    <!--FORGOT PANEL (LAST INSIDE CONTAINER) -->
 
-<script>
+    <div class="auth-forgot-panel" id="forgotPanel">
+      <div class="auth-form-inner">
+        <h2>Reset Password</h2>
+
+        <form id="forgotForm">
+          <input type="email" id="forgotEmail" class="form-control" placeholder="Enter email" required>
+          <button class="auth-btn" type="submit">Send Reset Link</button>
+        </form>
+
+        <button id="closeForgot" class="auth-ghost-btn">Back</button>
+      </div>
+    </div>
+
+    </div>
+  </div>
+ <script>
 (function () {
   const container = document.getElementById("authContainer");
   const signUpBtn = document.getElementById("signUpBtn");
