@@ -1,0 +1,24 @@
+.layout-body{
+   display:flex;
+   flex-direction:column;
+   min-height:100dvh;
+}
+
+.app-layout{
+   display:flex;
+   flex:1;
+   width:100%;
+   min-width:0;
+}
+
+.main-content{
+   flex:1;
+   width:100%;
+   min-width:0;
+   padding:32px 24px;
+}
+
+.page-wrapper{
+   width:100%;
+   min-width:0;
+}

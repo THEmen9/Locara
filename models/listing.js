@@ -32,20 +32,33 @@ const listingSchema = new mongoose.Schema({
     default: 1,
     min: 1
     },
+    
+    maxGuests: {
+    type: Number,
+    required: true,
+    default: 2,
+    min: 1
+    },
 
     location:{
         type: String,
         required: true,
     },
-    country:String,
+    country:{
+    type: String,
+    },
 
    geometry: {
     type: {
         type: String,
         enum: ["Point"],
-        required: true
+        default: "Point",
+        required: true,
     },
-     coordinates: [Number]
+     coordinates: {
+        type:[Number],
+        required: true
+      }
     },
 
     owner: {
@@ -88,7 +101,7 @@ const listingSchema = new mongoose.Schema({
 
 });
 
-
+listingSchema.index({ geometry: "2dsphere" });
 
 const Listing = mongoose.model("Listing", listingSchema);
 

@@ -1,176 +1,167 @@
 
 <div class="listings-page">
 
-  <!-- ── Hero Header ──────────────────────────────────── -->
+  <!-- ===== Header ===== -->
   <div class="listings-header">
-    <div class="header-text">
+    <div>
       <span class="header-eyebrow">Discover</span>
-      <h1 class="header-title">Explore <span class="title-accent">Stays</span></h1>
-      <p class="header-sub">Handpicked places that feel like home</p>
+      <h1 class="header-title">
+        Explore <span class="title-accent">Stays</span>
+      </h1>
+      <p class="header-sub">
+        Handpicked places that feel like home
+      </p>
     </div>
-    <div class="header-meta">
-      <span class="listing-count-badge">
-        <i class="bi bi-buildings"></i>
-        <%= allListings.length %> stays available
-      </span>
-    </div>
+
+    <span class="listing-count-badge">
+      <i class="bi bi-buildings"></i>
+      <%= allListings.length %> stays available
+    </span>
   </div>
 
-  <!-- ── Filter Bar (UX addition) ─────────────────────── -->
+  <!-- ===== Filters ===== -->
   <div class="filter-bar">
     <button class="filter-chip active" data-filter="all">All</button>
     <button class="filter-chip" data-filter="verified">
       <i class="bi bi-patch-check-fill"></i> Verified
     </button>
-    <button class="filter-chip" data-filter="photos">Multiple Photos</button>
+    <button class="filter-chip" data-filter="photos">
+      Multiple Photos
+    </button>
   </div>
 
-  <!-- ── Empty State ──────────────────────────────────── -->
-  <% if(!allListings || allListings.length === 0){ %>
-  <div class="empty-state">
-    <div class="empty-icon"><i class="bi bi-house-slash"></i></div>
-    <h3>No stays found</h3>
-    <p>Be the first to list your place.</p>
-    <% if(currentUser){ %>
-      <a href="/listings/new" class="action-btn reserve-btn">
-        <i class="bi bi-plus-circle me-1"></i> Add a Stay
-      </a>
-    <% } %>
-  </div>
+  <!-- ===== Empty State ===== -->
+
+  <% if (!allListings || allListings.length === 0) { %>
+    <div class="empty-state">
+      <i class="bi bi-house-slash" style="font-size:3rem; opacity:.4;"></i>
+      <h3>No stays found</h3>
+      <p>No stays match your current filters.
+        Try reducing guests or changing destination.</p>
+
+      <% if (currentUser) { %>
+        <a href="/listings/new"
+           class="locara-btn locara-btn--primary">
+           <i class="bi bi-plus-circle"></i>
+           Host your Stay
+        </a>
+      <% } %>
+    </div>
   <% } %>
 
-  <!-- ── Grid ─────────────────────────────────────────── -->
+  <!-- ===== Grid ===== -->
   <div class="listings-grid">
 
-    <% allListings.forEach((listing, idx) => { %>
+    <% allListings.forEach(listing => { %>
 
-    <%
-      /*
-        OWNERSHIP CHECK — computed once, used below.
-        Prevents the "Reserve shows for owner" bug.
-      */
-      const isOwner = currentUser &&
-                      listing.owner &&
-                      (listing.owner._id.toString() === currentUser._id.toString() ||
-                       currentUser.role === "dev");
-    %>
+      <%
+        const isOwner = currentUser &&
+          listing.owner &&
+          (listing.owner._id.toString() === currentUser._id.toString() ||
+           currentUser.role === "dev");
+      %>
 
-    <div class="listing-card"
-         style="animation-delay: <%= idx * 60 %>ms"
-         data-verified="<%= listing.isVerifiedOwner ? 'true' : 'false' %>"
-         data-photos="<%= (listing.images && listing.images.length > 1) ? 'true' : 'false' %>">
+    <a href="/listings/<%= listing._id %>" class="listing-card-link">
 
-      <!-- ── Image ── -->
-      <div class="card-image-wrap">
+      <div class="listing-card"
+           data-verified="<%= listing.isVerifiedOwner ? 'true' : 'false' %>"
+           data-photos="<%= (listing.images && listing.images.length > 1) ? 'true' : 'false' %>">
 
-        <% if(listing.images && listing.images.length){ %>
+        <!-- ===== Image ===== -->
+        <div class="card-image-wrap">
           <img
-            src="<%= listing.images[0].url.startsWith('http')
-                     ? listing.images[0].url
-                     : '/' + listing.images[0].url %>"
+            src="<%= listing.images && listing.images.length
+                    ? listing.images[0].url
+                    : '/images/default.jpg' %>"
             alt="<%= listing.title %>"
             class="card-img"
-            loading="lazy">
-        <% } else { %>
-          <img src="/default.jpg" alt="<%= listing.title %>" class="card-img" loading="lazy">
-        <% } %>
-
-        <!-- Overlay gradient -->
-        <div class="card-img-overlay"></div>
-
-        <!-- Badges (top-right) -->
-        <div class="card-badges-tr">
-          <% if(listing.images && listing.images.length > 1){ %>
-            <span class="img-count-badge">
-              <i class="bi bi-images"></i>
-              <%= listing.images.length %>
-            </span>
-          <% } %>
+            loading="lazy"
+            onerror="this.onerror=null; this.src='/images/default.jpg';">
+            
         </div>
 
-        <!-- Badges (top-left) -->
-        <div class="card-badges-tl">
-          <% if(listing.isVerifiedOwner){ %>
-            <span class="verified-badge">
-              <i class="bi bi-patch-check-fill"></i> Verified
-            </span>
-          <% } %>
-        </div>
-
-        <!-- Price pill — on image bottom -->
-        <div class="price-pill">
-          <span class="price-currency">₹</span>
-          <span class="price-value"><%= listing.price.toLocaleString('en-IN') %></span>
-          <span class="price-unit">/night</span>
-        </div>
-
-      </div>
-
-      <!-- ── Body ── -->
+        <!-- ===== Body ===== -->
+         
       <div class="card-body-inner">
 
-        <h3 class="card-listing-title"><%= listing.title %></h3>
+        <div class="card-top-row">
+          <h3 class="card-listing-title">
+            <%= listing.title %>
+          </h3>
 
-        <% if(listing.location || listing.country){ %>
-        <p class="card-location">
-          <i class="bi bi-geo-alt"></i>
-          <%= [listing.location, listing.country].filter(Boolean).join(', ') %>
-        </p>
+          <span class="rating-badge">
+            ⭐ 4.8
+          </span>
+        </div>
+
+        <% if (listing.location || listing.country) { %>
+          <p class="card-location">
+            <i class="bi bi-geo-alt"></i>
+            <%= [listing.location, listing.country]
+                  .filter(Boolean)
+                  .join(', ') %>
+          </p>
         <% } %>
 
-        <!-- ── Actions ── -->
-        <div class="card-actions">
-
-          <%
-            /*
-              Fix: Reserve is now explicitly in the else branch.
-            */
-          %>
-
-          <% if(isOwner){ %>
-            <!-- Owner view: View + Edit + Delete -->
-            <a href="/listings/<%= listing._id %>"
-               class="action-btn btn-view">
-              <i class="bi bi-eye"></i> View
-            </a>
-            <a href="/listings/<%= listing._id %>/edit"
-               class="action-btn btn-edit">
-              <i class="bi bi-pencil"></i> Edit
-            </a>
-            <form
-              action="/listings/<%= listing._id %>?_method=DELETE"
-              method="POST"
-              class="d-inline"
-              onsubmit="return confirm('Delete this listing? This cannot be undone.')">
-              <button type="submit" class="action-btn btn-delete">
-                <i class="bi bi-trash3"></i> Delete
-              </button>
-            </form>
-
-          <% } else { %>
-            <!-- Guest / other-user view: View + Reserve -->
-            <a href="/listings/<%= listing._id %>"
-               class="action-btn btn-view">
-              <i class="bi bi-eye"></i> View
-            </a>
-            <a href="/listings/<%= listing._id %>?reserve=true"
-               class="action-btn btn-reserve">
-              <i class="bi bi-calendar-plus"></i> Reserve
-            </a>
-
-          <% } %>
-
+        <div class="card-bottom-row">
+          <div class="price-info">
+            <span class="price-value">
+              ₹ <%= listing.price.toLocaleString('en-IN') %>
+            </span>
+            <span class="price-unit">/ night</span>
+          </div>
         </div>
 
       </div>
 
-    </div>
-
+      </div>
+       </a>
     <% }) %>
+  </div>
 
-  </div><!-- /listings-grid -->
 
-</div><!-- /listings-page -->
+  <!-- ===== Mobile Bottom Nav ===== -->
+
+ 
+<nav class="mobile-bottom-nav d-lg-none" aria-label="Mobile navigation">
+  <ul class="mb-nav">
+
+    <li class="mb-nav__item">
+      <a href="/listings" class="mb-nav__link mb-nav__link--active" aria-current="page">
+        <i class="bi bi-search mb-nav__icon" aria-hidden="true"></i>
+        <span class="mb-nav__label">Explore</span>
+      </a>
+    </li>
+
+    <li class="mb-nav__item">
+      <a href="/wishlists" class="mb-nav__link">
+        <i class="bi bi-heart mb-nav__icon" aria-hidden="true"></i>
+        <span class="mb-nav__label">Wishlists</span>
+      </a>
+    </li>
+
+    <% if (currentUser) { %>
+      <li class="mb-nav__item">
+        <form action="/logout" method="POST" class="mb-nav__form">
+          <button type="submit" class="mb-nav__link mb-nav__button">
+            <i class="bi bi-box-arrow-right mb-nav__icon" aria-hidden="true"></i>
+            <span class="mb-nav__label">Log out</span>
+          </button>
+        </form>
+      </li>
+    <% } else { %>
+      <li class="mb-nav__item">
+        <a href="/login" class="mb-nav__link">
+          <i class="bi bi-person mb-nav__icon" aria-hidden="true"></i>
+          <span class="mb-nav__label">Log in</span>
+        </a>
+      </li>
+    <% } %>
+
+  </ul>
+</nav>
+
+</div>
 
 
 <script>
@@ -180,6 +171,7 @@
 
   chips.forEach(chip => {
     chip.addEventListener('click', function () {
+
       chips.forEach(c => c.classList.remove('active'));
       this.classList.add('active');
 
@@ -187,13 +179,16 @@
 
       cards.forEach(card => {
         if (filter === 'all') {
-          card.classList.remove('filtered-out');
+          card.style.display = '';
         } else if (filter === 'verified') {
-          card.classList.toggle('filtered-out', card.dataset.verified !== 'true');
+          card.style.display =
+            card.dataset.verified === 'true' ? '' : 'none';
         } else if (filter === 'photos') {
-          card.classList.toggle('filtered-out', card.dataset.photos !== 'true');
+          card.style.display =
+            card.dataset.photos === 'true' ? '' : 'none';
         }
       });
+
     });
   });
 }());

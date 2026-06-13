@@ -1,100 +1,110 @@
-<div class="row justify-content-center">
-  <div class="col-md-7 col-lg-6">
 
-    <div class="card shadow-sm border-0 p-4">
+<section class="locara-form-page">
+  <div class="locara-form-card">
+    <header class="locara-form-head">
+      <span class="locara-form-eyebrow">Host a stay</span>
+      <p class="locara-form-copy"><i>Create a calm, premium listing for your guests with thoughtful details and modern presentation.</i></p>
+    </header>
 
-      <h4 class="mb-3 text-center fw-semibold">Create New Listing</h4>
+    <form action="/listings" method="POST" enctype="multipart/form-data" class="locara-form">
 
-      <form action="/listings" method="POST" enctype="multipart/form-data">
+      <div class="locara-field-group">
+        <label class="locara-field-label">Title</label>
+        <input type="text"
+               name="listing[title]"
+               class="locara-input"
+               required>
+      </div>
 
-        <!-- TITLE -->
-        <div class="mb-2">
-          <label class="form-label">Title</label>
-          <input type="text"
-                 name="listing[title]"
-                 class="form-control form-control-sm"
-                 required>
-        </div>
+      <div class="locara-field-group">
+        <label class="locara-field-label">Description</label>
+        <textarea name="listing[description]"
+                  class="locara-textarea"
+                  rows="4"
+                  required></textarea>
+      </div>
 
-        <!-- DESCRIPTION -->
-        <div class="mb-2">
-          <label class="form-label">Description</label>
-          <textarea name="listing[description]"
-                    class="form-control form-control-sm"
-                    rows="3"
-                    required></textarea>
-        </div>
-
-        <!-- PRICE -->
-        <div class="mb-2">
-          <label class="form-label">Whole Property Price (₹)</label>
+      <div class="locara-form-grid">
+        <div class="locara-field-group">
+          <label class="locara-field-label">Whole Property Price (₹)</label>
           <input type="number"
                  name="listing[price]"
-                 class="form-control form-control-sm"
+                 class="locara-input"
                  required>
         </div>
 
-        <!-- TOTAL ROOMS (REQUIRED FOR BOOKING LOGIC) -->
-        <div class="mb-2">
-          <label class="form-label">Total Rooms Available</label>
+        <div class="locara-field-group">
+          <label class="locara-field-label">Total Rooms Available</label>
           <input type="number"
                  name="listing[totalRooms]"
                  min="1"
-                 class="form-control form-control-sm"
+                 class="locara-input"
                  required>
         </div>
+        <div class="locara-field-group">
+          <label class="locara-field-label">Maximum Guests</label>
+          <input type="number"
+                name="listing[maxGuests]"
+                min="1"
+                value="2"
+                class="locara-input"
+                required>
+        </div>
+      </div>
 
-        <!-- LOCATION -->
-        <div class="mb-2">
-          <label class="form-label">Location</label>
+      <div class="locara-form-grid">
+        <div class="locara-field-group">
+          <label class="locara-field-label">Location</label>
           <input type="text"
                  name="listing[location]"
-                 class="form-control form-control-sm"
+                 class="locara-input"
                  placeholder="City, Country"
                  required>
         </div>
 
-        <!-- COUNTRY -->
-        <div class="mb-3">
-          <label class="form-label">Country</label>
+        <div class="locara-field-group">
+          <label class="locara-field-label">Country</label>
           <input type="text"
                  name="listing[country]"
-                 class="form-control form-control-sm">
+                 class="locara-input"
+                 placeholder="India">
         </div>
+      </div>
 
-        <!-- IMAGE LINK -->
-        <div class="mb-2">
-          <label class="form-label">Image URL (Optional)</label>
-          <input type="text"
-                 name="listing[image][url]"
-                 class="form-control form-control-sm"
-                 placeholder="Paste image link">
-        </div>
+      <div class="locara-field-group">
+        <label class="locara-field-label">Image URL (Optional)</label>
+        <input type="text"
+               name="listing[image][url]"
+               class="locara-input"
+               placeholder="Paste image link">
+      </div>
 
-        <!-- IMAGE UPLOAD -->
-        <div class="mb-3">
-          <label class="form-label">Upload Images</label>
+      <div class="locara-field-group">
+        <label class="locara-field-label">Upload Images</label>
+        <label class="locara-file-card" tabindex="0">
+          <span class="locara-file-title">Drag & drop images or click to browse</span>
+          <span class="locara-file-sub">PNG, JPG, GIF up to 10MB</span>
           <input type="file"
                  name="images"
                  multiple
-                 class="form-control form-control-sm">
-        </div>
+                 class="locara-file-input">
+        </label>
+      </div>
 
-        <!-- OWNERSHIP PROOF -->
-        <div class="mb-3">
-          <label class="form-label">Ownership Proof (Optional)</label>
+      <div class="locara-field-group">
+        <label class="locara-field-label">Ownership Proof (Optional)</label>
+        <label class="locara-file-card locara-file-card--small" tabindex="0">
+          <span class="locara-file-title">Upload a document</span>
+          <span class="locara-file-sub">PDF, JPG, PNG</span>
           <input type="file"
                  name="ownershipProof"
-                 class="form-control form-control-sm">
-        </div>
+                 class="locara-file-input">
+        </label>
+      </div>
 
-        <button class="btn btn-dark btn-sm w-100">
-          Create Listing
-        </button>
-
-      </form>
-
-    </div>
-
+      <button type="submit" class="booking-card__reserve-btn">
+        Create Listing
+      </button>
+    </form>
   </div>
-</div>
+</section>

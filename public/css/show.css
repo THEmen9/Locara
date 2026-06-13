@@ -1,0 +1,595 @@
+/* ============================================================
+   9. SHOW PAGE
+   ============================================================ */
+
+/* ── 1. Page shell ───────────────────────────────────────────── */
+.locara-show {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 28px 24px 80px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ls-text, #1a1a1a);
+  background: var(--ls-bg, #ffffff);
+  box-sizing: border-box;
+}
+ 
+/* ── 2. Header ───────────────────────────────────────────────── */
+.locara-show__header {
+  margin-bottom: 18px;
+}
+ 
+.locara-show__title {
+  font-family: 'Sora', sans-serif;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin: 0 0 8px;
+  color: var(--ls-text, #1a1a1a);
+}
+ 
+.locara-show__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.875rem;
+  color: var(--ls-text-muted, #717171);
+}
+ 
+.locara-show__rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  color: var(--ls-text, #1a1a1a);
+}
+ 
+.locara-show__rating svg { color: var(--ls-gold, #f59e0b); }
+ 
+.locara-show__dot { color: var(--ls-text-light, #e5e7eb); }
+ 
+.locara-show__reviews {
+  color: var(--ls-text, #1a1a1a);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+ 
+.locara-show__reviews:hover { color: var(--ls-accent, #0f766e); }
+ 
+.locara-show__location {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+ 
+/* ── 3. Gallery (Robust Responsive Grid) ────────────────────── */
+.locara-show__gallery {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr;
+  grid-template-rows: 220px 220px;
+  gap: 6px;
+  border-radius: var(--ls-radius-card, 16px);
+  overflow: hidden;
+  margin-bottom: 36px;
+  background: var(--ls-border, #e5e7eb);
+}
+ 
+.locara-show__gallery-item {
+  overflow: hidden;
+  background: var(--ls-border, #e5e7eb);
+}
+ 
+.locara-show__gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+ 
+.locara-show__gallery-item:hover img {
+  transform: scale(1.04); /* Smooth GPU-friendly scale down */
+}
+ 
+.locara-show__gallery-item--main {
+  grid-row: span 2;
+}
+ 
+.locara-show__gallery-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  background: var(--ls-surface, #ffffff);
+  border: 1.5px solid var(--ls-text, #1a1a1a);
+  border-radius: var(--ls-radius-xs, 8px);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ls-text, #1a1a1a);
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+  z-index: 2;
+}
+ 
+.locara-show__gallery-btn:hover {
+  background: var(--ls-accent-light, #ecfdf5);
+  border-color: var(--ls-accent, #0f766e);
+  color: var(--ls-accent-deep, #065f46);
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+ 
+/* ── 4. Two-column Layout ────────────────────────────────────── */
+.locara-show__layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(320px, 420px);
+  gap: 48px;
+  align-items: start;
+}
+ 
+/* ── 5. Left Column (Content Details) ────────────────────────── */
+.locara-show__content {
+  min-width: 0;
+}
+ 
+/* Host strip */
+.locara-show__host-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 24px;
+}
+ 
+.locara-show__host-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+ 
+.locara-show__host-info strong {
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: 'Sora', sans-serif;
+  letter-spacing: -0.01em;
+}
+ 
+.locara-show__host-info span {
+  font-size: 0.875rem;
+  color: var(--ls-text-muted, #717171);
+}
+ 
+.locara-show__host-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--ls-accent-light, #ecfdf5);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: var(--ls-accent, #0f766e);
+  border: 2px solid var(--ls-accent, #0f766e);
+}
+ 
+/* Dividers */
+.locara-show__divider {
+  border: none;
+  border-top: 1px solid var(--ls-border, #e5e7eb);
+  margin: 24px 0;
+}
+ 
+/* Highlights */
+.locara-show__highlights {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+ 
+.locara-show__highlight {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+ 
+.locara-show__highlight-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  width: 32px;
+  text-align: center;
+}
+ 
+.locara-show__highlight div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+ 
+.locara-show__highlight strong {
+  font-size: 0.925rem;
+  font-weight: 700;
+  color: var(--ls-text, #1a1a1a);
+}
+ 
+.locara-show__highlight span {
+  font-size: 0.85rem;
+  color: var(--ls-text-muted, #717171);
+}
+ 
+/* Section titles */
+.locara-show__section-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin-bottom: 12px;
+  color: var(--ls-text, #1a1a1a);
+}
+ 
+/* Description */
+.locara-show__description p {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: #57534e;
+}
+ 
+/* Price summary — hidden on desktop, shown on mobile */
+.locara-show__price-summary {
+  display: none;
+}
+ 
+.locara-show__price-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--ls-border, #e5e7eb);
+  color: var(--ls-text, #1a1a1a);
+}
+ 
+.locara-show__price-row--muted {
+  color: var(--ls-text-muted, #717171);
+}
+ 
+.locara-show__price-accent {
+  font-weight: 800;
+  color: var(--ls-accent, #0f766e);
+}
+ 
+/* ── 6. Map Section ──────────────────────────────────────────── */
+.locara-map-section {
+  margin-top: 8px;
+}
+ 
+.locara-map-section__title {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin: 0 0 16px;
+  color: var(--ls-text, #1a1a1a);
+}
+ 
+.locara-map__canvas {
+  width: 100%;
+  min-height: 260px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--ls-border, #e5e7eb);
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+}
+ 
+/* ── 7. Sidebar (Right Column) ───────────────────────────────── */
+.locara-show__sidebar {
+  min-width: 0;
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+}
+ 
+/* ── 8. Booking Card (Premium details) ───────────────────────── */
+.booking-card {
+  position: sticky;
+  top: 100px;
+  background: var(--ls-surface, #ffffff);
+  border: 1px solid var(--ls-border, #e5e7eb);
+  border-radius: var(--ls-radius-card, 16px);
+  padding: 28px 28px 24px;
+  box-shadow: var(--ls-shadow-card);
+  transition: box-shadow 0.25s ease;
+  overflow: visible;
+}
+ 
+.booking-card:hover {
+  box-shadow: var(--ls-shadow-hover);
+}
+ 
+/* Top accent gradient bar */
+.booking-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--ls-accent, #0f766e), #14b8a6, var(--ls-accent, #0f766e));
+  background-size: 200%;
+  border-radius: var(--ls-radius-card, 16px) var(--ls-radius-card, 16px) 0 0;
+  animation: cardAccentBar 4s linear infinite;
+}
+ 
+@keyframes cardAccentBar {
+  0%   { background-position: 0%   50%; }
+  100% { background-position: 200% 50%; }
+}
+ 
+/* Price header */
+.booking-card__price-header {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+ 
+.booking-card__price {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--ls-text, #1a1a1a);
+  letter-spacing: -0.03em;
+}
+ 
+.booking-card__price-value { color: var(--ls-accent, #0f766e); }
+ 
+.booking-card__price-unit {
+  font-size: 0.85rem;
+  color: var(--ls-text-muted, #717171);
+  font-weight: 400;
+}
+ 
+.booking-card__rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8rem;
+  color: var(--ls-text-muted, #717171);
+  margin-bottom: 16px;
+}
+ 
+.booking-card__rating strong { color: var(--ls-text, #1a1a1a); }
+ 
+.booking-card__divider {
+  border: none;
+  border-top: 1px solid var(--ls-border, #e5e7eb);
+  margin: 0 0 18px;
+}
+ 
+/* Form Elements */
+.booking-card__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+ 
+.booking-card__messages { width: 100%; }
+ 
+.booking-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 13px;
+}
+ 
+.booking-card__field--hidden { display: none !important; }
+ 
+.booking-card__label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ls-text-muted, #717171);
+}
+ 
+.booking-card__input,
+.booking-card__select {
+  height: 44px;
+  padding: 0 12px;
+  border: 1.5px solid var(--ls-border, #e5e7eb);
+  border-radius: var(--ls-radius-sm, 8px);
+  background: var(--ls-bg, #ffffff);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  color: var(--ls-text, #1a1a1a);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+}
+ 
+.booking-card__input::placeholder { color: var(--ls-text-light, #e5e7eb); }
+ 
+.booking-card__input:hover,
+.booking-card__select:hover { border-color: var(--ls-border-hover, #717171); }
+ 
+.booking-card__input:focus,
+.booking-card__select:focus {
+  border-color: var(--ls-accent, #0f766e);
+  background: var(--ls-surface, #ffffff);
+  box-shadow: 0 0 0 4px rgba(15,118,110,0.12);
+}
+ 
+/* Custom select wrapped chevron */
+.booking-card__select-wrap { position: relative; }
+ 
+.booking-card__select-chevron {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--ls-text-muted, #717171);
+}
+ 
+/* Date Picker Input Row (Fixed Collapsing Target) */
+.booking-card__date-row {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 0;
+  border: 1.5px solid var(--ls-border, #e5e7eb);
+  border-radius: var(--ls-radius-sm, 8px);
+  overflow: hidden;
+  margin-bottom: 13px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+ 
+.booking-card__date-row:focus-within {
+  border-color: var(--ls-accent, #0f766e);
+  box-shadow: 0 0 0 4px rgba(15,118,110,0.12);
+}
+ 
+.booking-card__date-row .booking-card__field {
+  margin-bottom: 0;
+  padding: 10px 12px;
+}
+ 
+.booking-card__date-sep {
+  background: var(--ls-border, #e5e7eb);
+  width: 1px;
+  align-self: stretch;
+}
+ 
+.booking-card__date-row .booking-card__input {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  height: 32px; /* FIXED: Enforces stable vertical click space prevents browser collapse */
+  line-height: 32px;
+  padding: 0;
+  font-size: 0.85rem;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
+}
+ 
+/* Price breakdown display */
+.booking-card__breakdown {
+  background: #f5f5f4;
+  border-radius: var(--ls-radius-sm, 8px);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+ 
+.booking-card__breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.855rem;
+  color: var(--ls-text-muted, #717171);
+}
+ 
+.booking-card__breakdown-row--total {
+  font-size: 0.9rem;
+  color: var(--ls-text, #1a1a1a);
+  padding-top: 8px;
+  border-top: 1px solid var(--ls-border, #e5e7eb);
+  margin-top: 2px;
+}
+ 
+/* Booking actions button */
+.booking-card__reserve-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, var(--ls-accent, #0f766e) 0%, #14b8a6 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--ls-radius-sm, 8px);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  box-shadow: var(--ls-shadow-btn);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+ 
+.booking-card__reserve-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.22) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+ 
+.booking-card__reserve-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ls-shadow-btn-hov);
+}
+ 
+.booking-card__reserve-btn:hover::after { transform: translateX(100%); }
+.booking-card__reserve-btn:active { transform: translateY(0); }
+ 
+.booking-card__reserve-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+ 
+/* Disclaimer styles */
+.booking-card__disclaimer {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--ls-text-light, #e5e7eb);
+  margin: 0;
+}
+ 
+/* Login prompt */
+.booking-card__login-prompt {
+  text-align: center;
+  padding: 8px 0 4px;
+}
+ 
+.booking-card__login-prompt p {
+  font-size: 0.875rem;
+  color: var(--ls-text-muted, #717171);
+  margin-bottom: 16px;
+}
+ 
+.booking-card__login-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, var(--ls-accent, #0f766e), #14b8a6);
+  color: #ffffff !important;
+  text-decoration: none;
+  text-align: center;
+  border-radius: var(--ls-radius-sm, 8px);
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.03em;
+  box-shadow: var(--ls-shadow-btn);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+ 
+.booking-card__login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ls-shadow-btn-hov);
+  color: #ffffff !important;
+}

@@ -9,26 +9,47 @@ const { isLoggedIn, isOwner } = require("../middleware");
 // const mapToken = process.env.MAP_TOKEN;
 // const geocoder = mbxGeocoding({ accessToken: mapToken });
 
-
-
 router.get("/", async (req, res) => {
+  try {
 
-  const { search } = req.query;
+    const { search, location, guests, dates} = req.query;
 
-  let allListings;
+    let query = {};
 
-  if (search) {
-    allListings = await Listing.find({
-      title: { $regex: search, $options: "i" }
-    });
-  } else {
-    allListings = await Listing.find({});
+    const searchTerm = location || search;
+
+    if (guests && Number(guests) > 0) {
+      query.maxGuests = {
+        $gte: Number(guests)
+      };
+    }
+
+    if (searchTerm && searchTerm.trim() !== "") {
+
+      query.$or = [
+        { title: { $regex: searchTerm, $options: "i" } },
+        { location: { $regex: searchTerm, $options: "i" } },
+        { country: { $regex: searchTerm, $options: "i" } }
+      ];
+
+    }
+
+    const allListings = await Listing.find(query);
+
+    res.render("listings/index", {
+    allListings,
+    filters: {
+      location,
+      guests,
+      dates
+    }
+  });
+
+  } catch (err) {
+    console.error("Search error:", err);
+    res.status(500).send("Something went wrong");
   }
-
-  res.render("listings/index", { allListings });
 });
-
-
 
 // New listing form
 router.get("/new",isLoggedIn, async (req, res) => {
@@ -51,12 +72,20 @@ router.post("/",isLoggedIn, upload.fields([
 
       /* ===== CREATE LISTING FIRST ===== */
       const newListing = new Listing(listingData);
+          console.log(listingData);
+
       newListing.owner = req.user._id;
 
         //  free geocoding
         const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${listingData.location}`
-        );
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(listingData.location)}`,
+        {
+          headers: {
+            "User-Agent": "Locara/1.0"
+          }
+        }
+     );
+
         const data = await response.json();
 
         if(data && data.length){
@@ -101,6 +130,35 @@ router.post("/",isLoggedIn, upload.fields([
       res.redirect("/listings/new");
     }
 
+});
+
+// search API for navbar autocomplete
+
+router.get("/api/search", async (req, res) => {
+  try {
+
+    const query = req.query.query?.trim();
+
+    if (!query) {
+      return res.json([]);
+    }
+
+    const listings = await Listing.find({
+      $or: [
+        { title: { $regex: query, $options: "i" } },
+        { location: { $regex: query, $options: "i" } },
+        { country: { $regex: query, $options: "i" } }
+      ]
+    })
+    .limit(8)
+    .select("title location country");
+
+    res.json(listings);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json([]);
+  }
 });
 
 // Show single listing

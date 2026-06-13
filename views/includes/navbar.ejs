@@ -1,132 +1,809 @@
+<%# ═  NAVBAR  ═════ %>
 
-<!-- Mobile nav backdrop -->
-<div class="nav-backdrop" id="navBackdrop"></div>
+<nav class="navbar no-transition" id="mainNavbar" role="navigation" aria-label="Main navigation">
+    <div class="container-fluid">
 
-<nav class="navbar navbar-expand-lg sticky-top">
-  <%#
-    FIX 4 — NAVBAR SPACING
-    ════════════════════════════════════════════════════════
-    OLD: unstructured d-flex with ad-hoc gaps, cramped on tablet,
-         brand and search misaligned with sidebar edge.
-    
-    NEW: two explicit regions — .navbar-left and .navbar-right
-         .navbar-left  → flex:1 with consistent gap (brand + search)
-         .navbar-right → flex-shrink:0 (controls, user menu)
-         
-         #navSidebarToggle: mobile only (d-lg-none via Bootstrap),
-         shows only when currentUser exists — single mobile trigger.
-         
-         .navbar-toggler: controls only #navMenu (user dropdown),
-         does NOT touch sidebar — clean separation of concerns.
-    ════════════════════════════════════════════════════════
-  %>
-  <div class="container-fluid">
+    <%# ══ ROW 1: brand  |  tabs or compact pill  |  user ════════ %>
 
-    <!-- ── LEFT: sidebar trigger + brand + search ──────── -->
-    <div class="navbar-left">
+    <div class="navbar-row-top">
 
-      <% if(currentUser){ %>
-      <button
-        id="navSidebarToggle"
-        class="d-lg-none"
-        aria-label="Open navigation">
-        <i class="bi bi-list"></i>
-      </button>
-      <% } %>
+      <%# ── Left: brand ──────────────────────────────────────── %>
 
-      <a class="brand-logo" href="/listings">StayNest</a>
+      <div class="navbar-left">
+        <a class="brand-logo" href="/listings" aria-label="Locara home">
+          <svg class="brand-icon" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <ellipse cx="16" cy="29" rx="5" ry="1.5" fill="rgba(124,58,237,0.15)"/>
+            <path d="M16 2C10.477 2 6 6.477 6 12c0 7.5 10 18 10 18S26 19.5 26 12c0-5.523-4.477-10-10-10z"
+                  fill="#7c3aed"/>
+            <path d="M16 2C10.477 2 6 6.477 6 12c0 2.5.9 4.8 2.4 6.6L22 5.2A9.96 9.96 0 0016 2z"
+                  fill="rgba(255,255,255,0.2)"/>
+            <circle cx="16" cy="12" r="3.8" fill="#fff"/>
+            <circle cx="16" cy="12" r="2" fill="#7c3aed" opacity="0.4"/>
+          </svg>
+          <span class="brand-word">LoCara</span>
+        </a>
+      </div>
 
-      <% if(currentUser){ %>
-      <form class="search-form" action="/listings" method="GET">
-        <input class="search-input"
-               type="search"
-               name="search"
-               placeholder="Search stays...">
-      </form>
-      <% } %>
+      <%# ── Center: tabs (unscrolled) ↔ compact pill (scrolled) ── %>
 
-    </div>
+      <% if (currentUser) { %>
+      <div class="navbar-center" id="navbarCenter">
 
-    <!-- ── RIGHT: user menu toggle ─────────────────────── -->
-    <div class="navbar-right">
-      <button
-        class="navbar-toggler d-lg-none"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navMenu"
-        aria-label="Toggle user menu">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-    </div>
+        <%# State 1 — Category tabs: visible at top of page %>
+        <div class="nav-tabs-group" id="navTabsGroup" role="tablist">
 
-  </div>
+          <a href="/listings" role="tab"
+             class="nav-tab <%= typeof currPath !== 'undefined' && currPath === '/listings' ? 'active' : '' %>"
+             aria-current="<%= typeof currPath !== 'undefined' && currPath === '/listings' ? 'page' : 'false' %>">
+            <i class="bi bi-house-door" aria-hidden="true"></i>
+            <span>Home</span>
+          </a>
 
-  <!-- User menu collapse -->
-  <div class="collapse navbar-collapse justify-content-end px-3" id="navMenu">
+          <a href="/listings/new" role="tab"
+             class="nav-tab <%= typeof currPath !== 'undefined' && currPath === '/listings/new' ? 'active' : '' %>"
+             aria-current="<%= typeof currPath !== 'undefined' && currPath === '/listings/new' ? 'page' : 'false' %>">
+            <i class="bi bi-plus-circle" aria-hidden="true"></i>
+            <span>Host Stay</span>
+          </a>
 
-    <% if(currentUser){ %>
-    <div class="user-dropdown mt-2 mt-lg-0">
-      <div class="user-pill" id="userToggle">
-        <span class="pill-arrow">›</span>
-        <div class="avatar-circle">
-          <%= currentUser.username.charAt(0).toUpperCase() %>
+          <a href="/my-bookings" role="tab"
+             class="nav-tab <%= typeof currPath !== 'undefined' && currPath === '/my-bookings' ? 'active' : '' %>"
+             aria-current="<%= typeof currPath !== 'undefined' && currPath === '/my-bookings' ? 'page' : 'false' %>">
+            <i class="bi bi-calendar-check" aria-hidden="true"></i>
+            <span>My Bookings</span>
+          </a>
+
         </div>
-        <span class="username-text"><%= currentUser.username %></span>
-        <% if(currentUser.role === "dev"){ %>
-          <span class="dev-badge">DEV</span>
-        <% } %>
-      </div>
 
-      <div class="dropdown-menu-custom" id="userMenu">
-        <form method="POST" action="/logout">
-          <button type="submit" class="logout-btn">Logout</button>
+        <%# — Compact pill: visible when scrolled %>
+
+        <form class="nav-search-compact" id="navSearchCompact"
+              action="/listings" method="GET" aria-label="Quick search">
+
+          <%# Icon segment %>
+          <div class="compact-icon-seg" aria-hidden="true">
+            <i class="bi bi-geo-alt-fill"></i>
+          </div>
+
+          <%# Where %>
+          <div class="compact-seg" id="compactWhereSegment">
+            <input
+              type="text"
+              name="location"
+              id="compactWhereInput"
+              value="<%= filters?.location || '' %>"
+              placeholder="Anywhere"
+              class="compact-input"
+              autocomplete="off"
+              aria-label="Destination"
+              aria-expanded="false"
+              aria-controls="compactDestPanel">
+          </div>
+
+          <div class="compact-divider" aria-hidden="true"></div>
+
+          <%# When — FIX: renamed from datePicker to datePickerCompact (was duplicate ID) %>
+          <div class="compact-seg">
+            <input
+              type="text"
+              id="datePickerCompact"
+              value="<%= filters?.dates || '' %>"
+              name="dates"
+              placeholder="Dates..."
+              class="compact-input">
+          </div>
+
+          <div class="compact-divider" aria-hidden="true"></div>
+
+          <%#------------------- Who------------- %>
+
+          <div class="compact-seg compact-seg-narrow" id="compactWhoSegment">
+            <input
+              type="number"
+              id="whoInput"
+              value="<%= filters?.guests || '' %>"
+              name="guests"
+              min="1"
+              max="10"
+              placeholder="Guests..."
+              class="compact-input"
+              aria-label="Number of guests">
+          </div>
+          <button
+          type="submit"
+          class="pill-search-btn"
+          aria-label="Search">
+
+          <i class="bi bi-search"></i>
+
+        </button>
+
         </form>
+
+        <%# Compact destination panel %>
+        <div class="destination-panel compact-dest-panel" id="compactDestPanel"
+             role="listbox" aria-label="Suggested destinations">
+          <div class="dest-title">Suggested destinations</div>
+          <div class="dest-item" data-location="Nearby" role="option" tabindex="0">
+            <i class="bi bi-send" aria-hidden="true"></i>
+            <div class="dest-text"><span class="dest-name">Nearby</span><span class="dest-desc">Find what's around you</span></div>
+          </div>
+          <div class="dest-item" data-location="New Delhi" role="option" tabindex="0">
+            <i class="bi bi-building" aria-hidden="true"></i>
+            <div class="dest-text"><span class="dest-name">New Delhi, Delhi</span><span class="dest-desc">For sights like India Gate</span></div>
+          </div>
+          <div class="dest-item" data-location="Jaipur" role="option" tabindex="0">
+            <i class="bi bi-building" aria-hidden="true"></i>
+            <div class="dest-text"><span class="dest-name">Jaipur, Rajasthan</span><span class="dest-desc">For its stunning architecture</span></div>
+          </div>
+          <div class="dest-item" data-location="Dehradun" role="option" tabindex="0">
+            <i class="bi bi-tree" aria-hidden="true"></i>
+            <div class="dest-text"><span class="dest-name">Dehradun, Uttarakhand</span><span class="dest-desc">For nature lovers</span></div>
+          </div>
+            <div class="no-results">
+            No destinations found
+          </div>
+
+        </div>
+
+      </div><%# /navbar-center %>
+
+      <% } %>
+
+      <%# ── Right: user pill or guest buttons ─────────────────── %>
+      <div class="navbar-right">
+
+        <% if (currentUser) { %>
+        <div class="user-dropdown">
+
+            <div class="user-pill" id="userToggle" role="button" tabindex="0"
+               aria-haspopup="true" aria-expanded="false">
+            <div class="pill-menu-icon" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="avatar-circle" aria-label="<%= currentUser.username %>">
+              <%= currentUser.username.charAt(0).toUpperCase() %>
+            </div>
+            <% if (currentUser.role === 'dev') { %>
+              <span class="dev-badge">DEV</span>
+            <% } %>
+          </div>
+          <div class="dropdown-menu-custom" id="userMenu" role="menu">
+            <div style="padding:10px 16px 6px; border-bottom:1px solid #f1f5f9; margin-bottom:4px;">
+              <div style="font-size:0.8rem;font-weight:700;color:#0f172a;"><%= currentUser.username %></div>
+              <div style="font-size:0.72rem;color:#7c3aed;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;">
+                <%= currentUser.role === 'dev' ? 'Developer' : 'Member' %>
+              </div>
+            </div>
+            <form method="POST" action="/logout">
+              <button type="submit" class="logout-btn" role="menuitem">
+                <i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>Logout
+              </button>
+            </form>
+          </div>
+        </div>
+        <% } %>
+
+        <% if (!currentUser) { %>
+        <div class="d-flex align-items-center gap-2">
+            <a href="/login"  class="nav-btn login-btn">Login</a>
+            <a href="/signup" class="nav-btn register-btn">Register</a>
+        </div>
+        <% } %>
+
+      </div><%# /navbar-right %>
+
+    </div><%# /navbar-row-top %>
+
+
+    <% if (currentUser) { %>
+    <div class="navbar-row-search" id="navbarSearchRow">
+
+      <form class="nav-search-expanded" id="navSearchExpanded"
+            action="/listings" method="GET" aria-label="Search stays">
+
+        <%# WHERE %>
+        <div class="search-seg search-seg-where" id="whereSegment">
+          <span class="search-seg-label">Where</span>
+          <input
+            type="text"
+            name="location"
+            id="whereInput"
+            value="<%= typeof filters !== 'undefined' ? filters.location || '' : '' %>"
+            placeholder="Search destinations"
+            class="search-seg-input"
+            autocomplete="off"
+            aria-label="Search destination"
+            aria-expanded="false"
+            aria-controls="destinationPanel"
+            aria-autocomplete="list">
+        </div>
+
+        <%# Destination suggestions panel %>
+        <div class="destination-panel" id="destinationPanel"
+             role="listbox" aria-label="Suggested destinations">
+          <div class="dest-title">Suggested destinations</div>
+          <div class="dest-item" data-location="Nearby" role="option" tabindex="0">
+            <i class="bi bi-send" aria-hidden="true"></i>
+            <div class="dest-text"><span class="dest-name">Nearby</span><span class="dest-desc">Find what's around you</span></div>
+          </div>
+          <div class="dest-item" data-location="New Delhi" role="option" tabindex="0">
+            <i class="bi bi-building" aria-hidden="true"></i>
+            <div class="dest-text"><span class="dest-name">New Delhi, Delhi</span><span class="dest-desc">For sights like India Gate</span></div>
+          </div>
+          <div class="dest-item" data-location="Jaipur" role="option" tabindex="0">
+            <i class="bi bi-building" aria-hidden="true"></i>
+            <div class="dest-text"><span class="dest-name">Jaipur, Rajasthan</span><span class="dest-desc">For its stunning architecture</span></div>
+          </div>
+          <div class="dest-item" data-location="Dehradun" role="option" tabindex="0">
+            <i class="bi bi-tree" aria-hidden="true"></i>
+            <div class="dest-text"><span class="dest-name">Dehradun, Uttarakhand</span><span class="dest-desc">For nature lovers</span></div>
+          </div>
+           <div class="no-results">
+            No destinations found
+          </div>
+        </div>
+
+        <%# WHEN — id matches expanded row, not compact (FIX: was duplicate datePicker) %>
+        <div class="search-seg search-seg-when">
+          <span class="search-seg-label">When</span>
+          <input
+            type="text"
+            id="datePicker"
+            value="<%= filters?.dates || '' %>"
+            name="dates"
+            class="compact-input"
+            placeholder="Add dates">
+        </div>
+
+        <%# WHO %>
+        <div class="search-seg search-seg-who">
+          <span class="search-seg-label">Who</span>
+          <input
+            type="number"
+            name="guests"
+            value="<%= typeof filters !== 'undefined' ? filters.guests || '' : '' %>"
+            min="1"
+            id="guestInput"
+            max="10"
+            placeholder="Add guests"
+            class="search-seg-input"
+            aria-label="Number of guests">
+        </div>
+
+        <button class="expanded-search-btn" type="submit" aria-label="Search">
+          <i class="bi bi-search" aria-hidden="true"></i>
+        </button>
+
+      </form>
+
+    </div><%# /navbar-row-search %>
+    <% } %>
+
+  </div><%# /container-fluid %>
+
+  <%# Guest panel — lives on the nav (not inside the hidden compact form) %>
+  <div class="compact-guest-panel" id="compactGuestPanel"
+       role="dialog" aria-label="Guests selection">
+
+    <div class="guest-row">
+      <div class="guest-text">
+        <span class="guest-name">Adults</span>
+        <span class="guest-desc">Ages 13+</span>
+      </div>
+      <div class="guest-counter">
+        <button class="guest-btn minus" data-type="adults" type="button">−</button>
+        <span class="guest-count" id="adultCount">0</span>
+        <button class="guest-btn plus" data-type="adults" type="button">+</button>
       </div>
     </div>
-    <% } %>
 
-    <% if(!currentUser){ %>
-      <a href="/login"  class="nav-btn login-btn me-2">Login</a>
-      <a href="/signup" class="nav-btn register-btn">Register</a>
-    <% } %>
+    <div class="guest-row">
+      <div class="guest-text">
+        <span class="guest-name">Children</span>
+        <span class="guest-desc">Ages 2–12</span>
+      </div>
+      <div class="guest-counter">
+        <button class="guest-btn minus" data-type="children" type="button">−</button>
+        <span class="guest-count" id="childCount">0</span>
+        <button class="guest-btn plus" data-type="children" type="button">+</button>
+      </div>
+    </div>
+
+    <div class="guest-row">
+      <div class="guest-text">
+        <span class="guest-name">Infants</span>
+        <span class="guest-desc">Under 2</span>
+      </div>
+      <div class="guest-counter">
+        <button class="guest-btn minus" data-type="infants" type="button">−</button>
+        <span class="guest-count" id="infantCount">0</span>
+        <button class="guest-btn plus" data-type="infants" type="button">+</button>
+      </div>
+    </div>
 
   </div>
+
 </nav>
 
-<!-- ── User pill dropdown script ──────────────────────────── -->
+<%# ══ NAVBAR JAVASCRIPT — single IIFE ══ %>
+
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const toggle = document.getElementById("userToggle");
-  const menu   = document.getElementById("userMenu");
-  if (!toggle || !menu) return;
 
-  toggle.addEventListener("click", function (e) {
-    e.stopPropagation();
-    const isOpen = menu.classList.toggle("active");
-    toggle.querySelector(".pill-arrow").style.transform = isOpen ? "rotate(90deg)" : "";
+  // Run BEFORE DOMContentLoaded — prevents flash
+
+  const nav = document.getElementById("mainNavbar");
+
+  if (nav) {
+    nav.classList.toggle("scrolled", window.scrollY > 10);
+  }
+  (function () {
+  "use strict";
+
+  /* ─────────────────────────────────────────
+     ELEMENT REFERENCES
+  ───────────────────────────────────────── */
+
+  const navbar = document.getElementById("mainNavbar");
+
+  const userToggle = document.getElementById("userToggle");
+  const userMenu   = document.getElementById("userMenu");
+
+  /* expanded search */
+  const whereSegment = document.getElementById("whereSegment");
+  const whereInput   = document.getElementById("whereInput");
+  const destPanel    = document.getElementById("destinationPanel");
+
+  /* compact search */
+  const compactWhere = document.getElementById("compactWhereSegment");
+  const compactInput = document.getElementById("compactWhereInput");
+  const compactPanel = document.getElementById("compactDestPanel");
+
+  /* guest */
+  const compactWhoSegment = document.getElementById("compactWhoSegment");
+  const guestPanel        = document.getElementById("compactGuestPanel");
+
+  console.log("compactWhoSegment:", compactWhoSegment);
+  console.log("guestPanel:", guestPanel);
+
+  const whoInput          = document.getElementById("whoInput");
+  const guestInput = document.getElementById("guestInput");
+
+
+  /* ─────────────────────────────────────────
+     PANEL MANAGER
+  ───────────────────────────────────────── */
+
+  const panels = [];
+
+  function registerPanel(segment, input, panel, { skipFocus = false } = {}) {
+    if (!segment || !panel) return;
+
+    panels.push({ segment, input, panel });
+
+    segment.addEventListener("click", (e) => {
+      if (e.target === input) return;
+      e.stopPropagation();
+      const isOpen = panel.classList.contains("active");
+      closeAllPanels();
+      if (!isOpen) {
+        panel.classList.add("active");
+        if (input && !skipFocus) {
+          input.focus();
+          input.setAttribute("aria-expanded", "true");
+        }
+      }
+    });
+
+    if (input && !skipFocus) {
+      input.addEventListener("focus", () => {
+
+        if (panel.classList.contains("active")) return;
+        closeAllPanels();
+        panel.classList.add("active");
+        input.setAttribute("aria-expanded", "true");
+      });
+    }
+
+    panel.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+  }
+
+  function closeAllPanels() {
+    panels.forEach(p => {
+      p.panel.classList.remove("active");
+      if (p.input) p.input.setAttribute("aria-expanded", "false");
+    });
+
+    if (guestPanel) {
+      /* FIX: was toggling .open — now unified on .active to match CSS */
+      guestPanel.classList.remove("active");
+    }
+     if (userMenu) {
+     userMenu.classList.remove("active");
+     userToggle?.setAttribute("aria-expanded", "false");
+    }
+  }
+
+
+  /* ─────────────────────────────────────────
+     SCROLL NAVBAR STATE
+     FIX: wrapped in rAF to prevent layout-flush on every scroll event
+  ───────────────────────────────────────── */
+
+  
+  let lastScrolled = window.scrollY > 10;
+  let rafPending = false;
+  function syncScrollState() {
+   if (rafPending) return;
+
+    rafPending = true;
+
+    requestAnimationFrame(() => {
+      rafPending = false;
+
+      const scrolled = window.scrollY > 10;
+
+      navbar.classList.toggle("scrolled", scrolled);
+
+    if (scrolled !== lastScrolled) {
+        closeAllPanels();
+        lastScrolled = scrolled;
+    }
   });
+}
 
-  document.addEventListener("click", function () {
-    menu.classList.remove("active");
-    const arrow = toggle && toggle.querySelector(".pill-arrow");
-    if (arrow) arrow.style.transform = "";
+// Sync scroll state immediately on script evaluation
+
+ syncScrollState();
+  window.addEventListener("scroll", syncScrollState, { passive: true });
+  window.addEventListener("resize", syncScrollState, { passive: true });
+  
+
+  // define panels before attaching dest-item listeners, so they can call closeAllPanels()
+
+  registerPanel(whereSegment, whereInput, destPanel);
+  registerPanel(compactWhere, compactInput, compactPanel);
+
+  /* ─────────────────────────────────────────
+     GUEST PANEL — shared open helper
+     Positions the fixed panel below whichever trigger was clicked
+  ───────────────────────────────────────── */
+
+  function openGuestPanel(triggerEl) {
+    if (!guestPanel) return;
+    const isOpen = guestPanel.classList.contains("active");
+    closeAllPanels();
+    if (isOpen) return; // toggle off
+
+    const rect = triggerEl.getBoundingClientRect();
+    guestPanel.style.top  = (rect.bottom + 8) + "px";
+    // align right edge of panel to right edge of trigger
+    const panelWidth = 300;
+    let left = rect.right - panelWidth;
+    // clamp so panel doesn't overflow off left edge
+    if (left < 8) left = 8;
+    guestPanel.style.left = left + "px";
+    guestPanel.classList.add("active");
+  }
+
+  // Compact pill Who segment
+  if (compactWhoSegment) {
+    compactWhoSegment.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openGuestPanel(compactWhoSegment);
+    });
+  }
+
+  // Expanded row Who segment
+  const expandedWhoSeg = document.querySelector(".search-seg-who");
+  if (expandedWhoSeg) {
+    expandedWhoSeg.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openGuestPanel(expandedWhoSeg);
+    });
+  }
+
+  // Prevent clicks inside the panel from bubbling to document close handler
+  if (guestPanel) {
+    guestPanel.addEventListener("click", (e) => e.stopPropagation());
+  }
+
+  document.querySelectorAll(".dest-item").forEach(item => {
+  item.addEventListener("click", () => {
+
+    const location = item.dataset.location || "";
+
+    const panel = item.closest(".destination-panel");
+
+    if (panel?.id === "destinationPanel" && whereInput) {
+      whereInput.value = location;
+    }
+
+    if (panel?.id === "compactDestPanel" && compactInput) {
+      compactInput.value = location;
+    }
+
+    closeAllPanels();
+
   });
 });
-</script>
 
-<!-- ── Nav backdrop (for Bootstrap collapse) ──────────────── -->
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const navCollapse = document.getElementById("navMenu");
-  const backdrop    = document.getElementById("navBackdrop");
-  if (!navCollapse || !backdrop) return;
+// Debounce function for filtering
 
-  navCollapse.addEventListener("show.bs.collapse",  function () { backdrop.classList.add("active"); });
-  navCollapse.addEventListener("hidden.bs.collapse", function () { backdrop.classList.remove("active"); });
+  function debounce(fn, delay = 300) {
 
-  backdrop.addEventListener("click", function () {
-    const bsCollapse = bootstrap.Collapse.getInstance(navCollapse);
-    if (bsCollapse) bsCollapse.hide();
+    let timer;
+
+    return (...args) => {
+
+      clearTimeout(timer);
+
+      timer = setTimeout(() => {
+        fn(...args);
+      }, delay);
+
+    };
+  }
+// Destination Live Filtering
+
+function filterDestinations(input, panel) {
+
+  const query = input.value
+    .toLowerCase()
+    .trim();
+
+  const items =
+    panel.querySelectorAll(".dest-item");
+
+  const noResults =
+    panel.querySelector(".no-results");
+
+  let visibleCount = 0;
+
+  items.forEach(item => {
+
+    const location =
+      item.dataset.location.toLowerCase();
+
+    const show =
+      location.includes(query);
+
+    item.style.display =
+      show ? "flex" : "none";
+
+    if (show) visibleCount++;
+
   });
+
+  if (noResults) {
+    noResults.style.display =
+      visibleCount === 0
+        ? "block"
+        : "none";
+  }
+}
+// stub for actual search API call (currently just logs results)
+
+async function searchDestinations(query, panel) {
+
+  if (!query.trim()) {
+
+  panel
+    .querySelectorAll(".dynamic-result")
+    .forEach(el => el.remove());
+
+  panel
+    .querySelectorAll(".dest-item:not(.dynamic-result)")
+    .forEach(el => {
+      el.style.display = "flex";
+    });
+
+  return;
+}
+  try {
+
+    const res = await fetch(
+      `/listings/api/search?query=${encodeURIComponent(query)}`
+    );
+
+    const results = await res.json();
+
+  renderSearchResults(results, panel);
+
+  } catch (err) {
+    console.error("Search failed:", err);
+  }
+
+}
+
+// renders search results into the given panel, replacing any existing dynamic results
+
+function renderSearchResults(results, panel) {
+
+  const staticItems =
+  panel.querySelectorAll(
+    ".dest-item:not(.dynamic-result)"
+  );
+
+  staticItems.forEach(item => {
+  item.style.display = "none";
 });
+
+  const oldItems =
+  panel.querySelectorAll(".dynamic-result");
+
+  oldItems.forEach(item => item.remove());
+
+  results.forEach(listing => {
+
+    const div = document.createElement("div");
+
+    div.className =
+      "dest-item dynamic-result";
+
+    div.dataset.location = listing.location;
+// FIX: was using listing._id, but that could cause issues if user searches same location multiple times — switched to dataset + event delegation for simplicity
+    div.addEventListener("click", () => {
+
+    const location = listing.location || "";
+
+    if (panel.id === "destinationPanel" && whereInput) {
+      whereInput.value = location;
+    }
+
+    if (panel.id === "compactDestPanel" && compactInput) {
+      compactInput.value = location;
+    }
+
+    closeAllPanels();
+
+  });
+
+    div.innerHTML = `
+      <i class="bi bi-geo-alt"></i>
+
+      <div class="dest-text">
+        <span class="dest-name">
+          ${listing.location}
+        </span>
+
+        <span class="dest-desc">
+          ${listing.country || ""}
+        </span>
+      </div>
+    `;
+
+    panel.appendChild(div);
+
+  });
+
+}
+
+  // debounce is available for future use if filterDestinations is wired to an input
+    whereInput?.addEventListener("input", () => {
+
+    destPanel.classList.add("active");
+    whereInput.setAttribute("aria-expanded", "true");
+
+  searchDestinations(whereInput.value, destPanel);
+  });
+
+  compactInput?.addEventListener("input", () => {
+
+    compactPanel.classList.add("active");
+    compactInput.setAttribute("aria-expanded", "true");
+
+  searchDestinations(compactInput.value, compactPanel);
+  });
+
+  //  GUEST PANEL — registered via openGuestPanel() above
+
+
+  /* ─────────────────────────────────────────
+     GUEST COUNTERS
+  ───────────────────────────────────────── */
+
+  const counters = {
+    adults:   0,
+    children: 0,
+    infants:  0
+  };
+
+  document.querySelectorAll(".guest-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const type = btn.dataset.type;
+      if (btn.classList.contains("plus"))                        counters[type]++;
+      if (btn.classList.contains("minus") && counters[type] > 0) counters[type]--;
+
+      const countIds = {
+      adults: "adultCount",
+      children: "childCount",
+      infants: "infantCount"
+    };
+
+    const el = document.getElementById(countIds[type]);
+
+    if (el) {
+      el.innerText = counters[type];
+    }
+      updateGuestText();
+    });
+  });
+
+  function updateGuestText() {
+    const total = counters.adults + counters.children;
+   let text = total === 0
+    ? "Add guests"
+    : `${total} guest${total > 1 ? "s" : ""}`;
+
+  if (counters.infants > 0) {
+    text += ` • ${counters.infants} infant${counters.infants > 1 ? "s" : ""}`;
+  }
+
+    // Update placeholder so the pill label reflects the selection
+    const whoValue = document.querySelector(
+      "#compactWhoSegment .who-value"
+    );
+
+    if (whoValue) {
+      whoValue.innerText = text;
+    }
+
+    if (whoInput) {
+      whoInput.value = total > 0 ? total : "";
+    }
+
+    if (guestInput) {
+     guestInput.value = total > 0 ? total : "";
+    }
+  }
+
+
+  /* ─────────────────────────────────────────
+     USER DROPDOWN
+  ───────────────────────────────────────── */
+
+  if (userToggle && userMenu) {
+    userToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = userMenu.classList.toggle("active");
+      userToggle.setAttribute("aria-expanded", open);
+    });
+  }
+
+  /* ─────────────────────────────────────────
+     GLOBAL EVENTS
+  ───────────────────────────────────────── */
+
+  document.addEventListener("click", (e) => {
+    const insidePanel =
+      e.target.closest("#compactWhoSegment") ||
+      e.target.closest("#compactGuestPanel") ||
+      e.target.closest(".search-seg-who") ||
+      e.target.closest("#whereSegment") ||
+      e.target.closest("#destinationPanel") ||
+      e.target.closest("#compactWhereSegment") ||
+      e.target.closest("#compactDestPanel") ||
+      e.target.closest("#userToggle") ||
+      e.target.closest("#userMenu");
+
+    if (!insidePanel) {
+      closeAllPanels();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeAllPanels();
+      if (userMenu) {
+        userMenu.classList.remove("active");
+        userToggle?.setAttribute("aria-expanded", "false");
+      }
+    }
+  });
+
+})();
 </script>

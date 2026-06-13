@@ -1,0 +1,141 @@
+/* ============================================================
+   RESPONSIVE — Locara (Page Layouts Only)
+   All Navbar specific responsive logic has been safely consolidated
+   inside navbar.css to eliminate Viewport Breakpoint Warfare.
+   ============================================================ */
+
+/* ── 1. PAGE LAYOUT & FOOTER (Tablet & Mobile) ──────────────── */
+
+@media (max-width: 768px) {
+  .main-content    { padding: 16px; }
+  .listings-page   { padding: 20px 0 48px; }
+  .listings-header { flex-direction: column; align-items: flex-start; }
+  .sticky-booking  { position: relative !important; top: auto; margin-top: 20px; }
+  .show-page #listingCarousel .carousel-item img { height: 260px !important; }
+  .show-page .card-body h3 { font-size: 1.45rem; }
+}
+
+@media (max-width: 767px) {
+  .site-footer    { padding: 36px 20px 0; }
+  .footer-inner   { grid-template-columns: 1fr 1fr; gap: 32px 20px; }
+  .footer-brand   { grid-column: 1 / -1; }
+  .footer-bottom  { justify-content: center; flex-wrap: wrap; gap: 6px; text-align: center; }
+
+  .auth-container          { min-height: auto; width: 100%; border-radius: 16px; }
+  .auth-overlay-container  { display: none; }
+  .auth-form-container     { position: relative; width: 100%; opacity: 1 !important; transform: none !important; z-index: auto !important; }
+  .auth-sign-up            { display: none; }
+  .right-panel-active .auth-sign-in { display: none; transform: none; }
+  .right-panel-active .auth-sign-up { display: block; transform: none; }
+  .auth-form-inner         { padding: 36px 28px; }
+}
+
+@media (max-width: 575px) {
+  .show-page                                     { padding-top: 16px; padding-bottom: 48px; }
+  .show-page #listingCarousel .carousel-item img { height: 220px !important; }
+  .sticky-booking                                { padding: 22px 18px !important; }
+  .show-page .card-body h3                       { font-size: 1.3rem; }
+  .bookings-container                            { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .footer-inner { grid-template-columns: 1fr; }
+  .footer-brand { grid-column: auto; }
+}
+
+/* ── 2. SHOW PAGES RESPONSIVE ──────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .locara-show__layout {
+    grid-template-columns: 1fr 340px;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 860px) {
+  .locara-show__layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .locara-show__sidebar { margin-top: 32px; }
+  .booking-card { position: static; }
+  .locara-show__gallery {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 180px 180px 180px;
+  }
+  .locara-show__gallery-item--main {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+  .locara-show__price-summary { display: block; }
+}
+
+@media (max-width: 600px) {
+  .locara-show { 
+    padding: 16px 16px 60px; 
+  }
+  
+  /* PERFECT MOBILE GALLERY: Displays 3 photos in 2 rows with zero gaps */
+  .locara-show__gallery {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 150px 150px; /* Reduced to exactly 2 rows */
+    border-radius: var(--ls-radius-sm, 8px);
+    gap: 4px;
+  }
+  
+  .locara-show__gallery-item--main {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+  
+  /* Hide the 4th and 5th photos so they leave no gaps */
+  .locara-show__gallery-item:nth-child(n+4) { 
+    display: none !important; 
+  }
+  
+  .locara-show__gallery-btn { 
+    font-size: 0.75rem; 
+    padding: 7px 12px; 
+    bottom: 8px;
+    right: 8px;
+  }
+  
+  .locara-show__title { 
+    font-size: 1.35rem; 
+  }
+  
+  .booking-card { 
+    padding: 22px 18px 20px; 
+  }
+  
+  /* Stack Check-In & Check-Out Vertically on Mobile */
+  .booking-card__date-row {
+    grid-template-columns: 1fr;
+    border-radius: var(--ls-radius-sm, 8px);
+  }
+  
+  .booking-card__date-sep { 
+    display: none; 
+  }
+  
+  .booking-card__date-row .booking-card__field:first-child {
+    border-bottom: 1px solid var(--ls-border, #e5e7eb);
+  }
+}
+
+/* ── 3. LISTINGS (NEW / EDIT) RESPONSIVE ───────────────────── */
+
+@media (max-width: 768px) {
+  .locara-form-page { padding: 32px 16px 64px; }
+  .locara-form-card { padding: 32px 28px; }
+  .locara-form-grid { grid-template-columns: 1fr; gap: 0; }
+}
+
+@media (max-width: 480px) {
+  .locara-form-page  { padding: 24px 12px 56px; }
+  .locara-form-card  { padding: 28px 20px; border-radius: 14px; }
+  .locara-form-head  { margin-bottom: 28px; }
+  .locara-form-copy  { font-size: 0.875rem; }
+  .locara-btn--wide  { padding: 14px 16px; font-size: 0.9rem; }
+  .locara-file-card  { min-height: 88px; padding: 18px 14px; }
+}

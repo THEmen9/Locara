@@ -1,0 +1,254 @@
+<%- /* ============================================================
+        LOCARA — payment.ejs
+        Variables: booking (populated: listing, user), razorpayKeyId, razorpayOrderId
+   ============================================================ */ %>
+
+
+<div class="lp-payment">
+
+  <!-- ── HEADER ─────────────────────────────────────────────── -->
+  <div class="lp-payment__header">
+    <a href="/bookings/<%= booking._id %>/reserve" class="lp-reserve__back">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Change payment method
+    </a>
+    <div class="lp-reserve__brand">
+      <span class="lp-reserve__brand-dot"></span>Locara
+    </div>
+  </div>
+
+  <!-- ── MAIN GRID ──────────────────────────────────────────── -->
+  <div class="lp-payment__layout">
+
+    <!-- LEFT ── payment form ─────────────────────────────── -->
+    <main class="lp-payment__main">
+
+      <h1 class="lp-reserve__title">Complete payment</h1>
+      <p class="lp-reserve__subtitle">Your reservation will be confirmed after payment</p>
+
+      <!-- Booking summary strip -->
+      <div class="lp-booking-strip">
+        <% if(booking.listing.images && booking.listing.images.length){ %>
+        <img
+          class="lp-booking-strip__img"
+          src="<%= booking.listing.images[0].url.startsWith('http') ? booking.listing.images[0].url : '/' + booking.listing.images[0].url %>"
+          alt="<%= booking.listing.title %>"
+        >
+        <% } %>
+        <div class="lp-booking-strip__info">
+          <strong><%= booking.listing.title %></strong>
+          <span>
+            <%= new Date(booking.checkIn).toLocaleDateString('en-IN',{day:'numeric',month:'short'}) %>
+            →
+            <%= new Date(booking.checkOut).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) %>
+          </span>
+          <span><%= booking.guests %> guest<%= booking.guests>1?'s':'' %></span>
+        </div>
+        <div class="lp-booking-strip__total">
+          <span>Total</span>
+          <strong>₹<%= booking.totalPrice.toLocaleString('en-IN') %></strong>
+        </div>
+      </div>
+
+      <!-- Razorpay action card -->
+      <div class="lp-pay-card">
+
+        <div class="lp-pay-card__method">
+          <div class="lp-pay-card__method-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <div>
+            <strong>Online payment via Razorpay</strong>
+            <span>UPI · Cards · Net Banking · Wallets</span>
+          </div>
+          <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" class="lp-pay-card__rz-logo" onerror="this.style.display='none'">
+        </div>
+
+        <div class="lp-pay-card__amount">
+          <span>Amount to pay</span>
+          <div class="lp-pay-card__amount-value">₹<%= booking.totalPrice.toLocaleString('en-IN') %></div>
+        </div>
+
+        <button id="rzpPayBtn" class="lp-cta-btn lp-cta-btn--pay" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Pay ₹<%= booking.totalPrice.toLocaleString('en-IN') %>
+        </button>
+
+        <div class="lp-pay-card__loader" id="payLoader" hidden>
+          <div class="lp-spinner"></div>
+          <span>Processing payment…</span>
+        </div>
+
+        <div id="payResult" class="lp-pay-card__result" hidden></div>
+
+        <!-- Trust -->
+        <div class="lp-trust lp-trust--centered">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>256-bit SSL encryption · PCI DSS compliant</span>
+        </div>
+
+      </div>
+
+      <!-- Payment methods chips -->
+      <div class="lp-pm-chips">
+        <div class="lp-pm-chip">💳 Cards</div>
+        <div class="lp-pm-chip">📱 UPI</div>
+        <div class="lp-pm-chip">🏦 Net Banking</div>
+        <div class="lp-pm-chip">👛 Wallets</div>
+        <div class="lp-pm-chip">⚡ EMI</div>
+      </div>
+
+    </main>
+
+    <!-- RIGHT ── price card ───────────────────────────────── -->
+    <aside class="lp-payment__sidebar">
+      <div class="lp-price-card">
+
+        <% const nights = Math.ceil((new Date(booking.checkOut) - new Date(booking.checkIn)) / 86400000); %>
+        <% const perNight = Math.round(booking.totalPrice / nights); %>
+
+        <div class="lp-price-card__header">
+          <div>
+            <span class="lp-price-card__price">₹<%= perNight.toLocaleString('en-IN') %></span>
+            <span class="lp-price-card__unit">/ night</span>
+          </div>
+          <div class="lp-price-card__stars">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            4.8
+          </div>
+        </div>
+
+        <hr class="lp-price-card__divider">
+
+        <div class="lp-price-card__rows">
+          <div class="lp-price-card__row">
+            <span>₹<%= perNight.toLocaleString('en-IN') %> × <%= nights %> night<%= nights>1?'s':'' %></span>
+            <span>₹<%= booking.totalPrice.toLocaleString('en-IN') %></span>
+          </div>
+          <div class="lp-price-card__row"><span>Service fee</span><span>₹0</span></div>
+          <div class="lp-price-card__row"><span>Taxes</span><span>Included</span></div>
+        </div>
+
+        <hr class="lp-price-card__divider">
+
+        <div class="lp-price-card__total">
+          <strong>Total (INR)</strong>
+          <strong>₹<%= booking.totalPrice.toLocaleString('en-IN') %></strong>
+        </div>
+
+        <div class="lp-trust">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Secure payment · <strong>Razorpay</strong></span>
+        </div>
+
+      </div>
+
+      <!-- Cancellation reminder -->
+      <div class="lp-cancel-note">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div>
+          <strong>Free cancellation</strong>
+          <span>Cancel before check-in for a full refund</span>
+        </div>
+      </div>
+
+    </aside>
+
+  </div><!-- /.lp-payment__layout -->
+</div><!-- /.lp-payment -->
+
+
+<!-- ── RAZORPAY CHECKOUT ──────────────────────────────────────── -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+(function() {
+  "use strict";
+
+  const RZP_KEY_ID  = "<%= razorpayKeyId %>";
+  const ORDER_ID    = "<%= razorpayOrderId %>";
+  const BOOKING_ID  = "<%= booking._id %>";
+  // eslint-disable-next-line no-undef
+  const TOTAL       = <%= booking.totalPrice %>;
+
+  const payBtn    = document.getElementById("rzpPayBtn");
+  const payLoader = document.getElementById("payLoader");
+  const payResult = document.getElementById("payResult");
+
+  /* ── Build Razorpay options ── */
+  const rzpOptions = {
+    key:         RZP_KEY_ID,
+    amount:      TOTAL * 100,
+    currency:    "INR",
+    name:        "Locara",
+    description: "Booking #" + BOOKING_ID,
+    image:       "/images/locara-logo.png",   /* optional logo */
+    order_id:    ORDER_ID,
+
+    handler: async function(response) {
+      payBtn.hidden   = true;
+      payLoader.hidden = false;
+      payResult.hidden = true;
+
+      try {
+        const res = await fetch(`/bookings/${BOOKING_ID}/verify-payment`, {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify({
+            razorpay_order_id:   response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature:  response.razorpay_signature,
+          }),
+        });
+
+        const data = await res.json();
+
+        payLoader.hidden = true;
+
+        if (data.success) {
+          window.location.href = `/bookings/${BOOKING_ID}/success`;
+        } else {
+          showResult(data.message || "Payment verification failed.", "error");
+          payBtn.hidden = false;
+        }
+      } catch (err) {
+        payLoader.hidden = true;
+        showResult("Network error. Please try again.", "error");
+        payBtn.hidden = false;
+      }
+    },
+
+    prefill: {
+      name:  "<%= currentUser?.username || '' %>",
+      email: "<%= currentUser?.email    || '' %>",
+    },
+
+    theme: { color: "#0f766e" },
+
+    modal: {
+      ondismiss: function() {
+        payBtn.hidden   = false;
+        payLoader.hidden = true;
+      },
+    },
+  };
+
+  const rzp = new Razorpay(rzpOptions);
+
+  rzp.on("payment.failed", function(resp) {
+    showResult("Payment failed: " + (resp.error.description || "Unknown error"), "error");
+    payBtn.hidden   = false;
+    payLoader.hidden = true;
+  });
+
+  payBtn.addEventListener("click", function() {
+    rzp.open();
+  });
+
+  /* ── Helper ── */
+  function showResult(msg, type) {
+    payResult.hidden    = false;
+    payResult.textContent = msg;
+    payResult.className = "lp-pay-card__result lp-pay-card__result--" + type;
+  }
+})();
+</script>

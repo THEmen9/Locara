@@ -1,264 +1,364 @@
+<div class="locara-show">
 
-<div class="show-page container-xl py-4">
+  <!-- ── HERO HEADER ─────────────────────────────────────────── -->
+  <header class="locara-show__header">
+    <h1 class="locara-show__title"><%= listing.title %></h1>
+    <div class="locara-show__meta">
+      <span class="locara-show__rating">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        4.8
+      </span>
+      <span class="locara-show__dot">·</span>
+      <a href="#" class="locara-show__reviews">128 reviews</a>
+      <span class="locara-show__dot">·</span>
+      <span class="locara-show__location">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <%= listing.location %>, <%= listing.country %>
+      </span>
+    </div>
+  </header>
 
-<div class="row g-3">
+  <!-- ── STICKY BAR ───────────────────────────────────────────── -->
+<!--    
+  <div id="locaraStickyBar" class="locara-sticky-bar" aria-hidden="true">
+    <div class="locara-sticky-bar__inner">
+      <div class="locara-sticky-bar__info">
+        <div class="locara-sticky-bar__price">₹<%= listing.price %><small>/ night</small></div>
+        <div class="locara-sticky-bar__meta">Booking dates <span id="locaraStickyDates"></span></div>
+      </div>
+      <button id="locaraReserveBtn" type="button" class="locara-sticky-bar__btn">Reserve</button>
+    </div>
+  </div> -->
 
-  <!-- ================= LEFT — DETAILS ================= -->
-  <div class="<%= showReserve ? 'col-lg-8' : 'col-lg-12' %>">
+  <!-- ── GALLERY ──────────────────────────────────────────────── -->
+  <section class="locara-show__gallery" aria-label="Listing images">
+    <% listing.images.slice(0, 5).forEach((img, i) => { %>
+      <div class="locara-show__gallery-item <%= i === 0 ? 'locara-show__gallery-item--main' : '' %>">
+        <img
+          src="<%= img.url.startsWith('http') ? img.url : '/' + img.url %>"
+          alt="Listing photo <%= i + 1 %>"
+          loading="<%= i === 0 ? 'eager' : 'lazy' %>"
+        >
+      </div>
+    <% }) %>
+    <button class="locara-show__gallery-btn" type="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Show all photos
+    </button>
+  </section>
 
-    <div class="card shadow-sm border-0">
-      <div class="card-body">
+  <!-- ── MAIN GRID ─────────────────────────────────────────────── -->
+  <div class="locara-show__layout">
 
-        <!-- TITLE -->
-        <h3 class="fw-semibold mb-3"><%= listing.title %></h3>
+    <!-- LEFT — Listing Detail ─────────────────────────────── -->
+    <main class="locara-show__content">
 
-        <!-- CAROUSEL -->
-        <div id="listingCarousel" class="carousel slide mb-3">
-          <div class="carousel-inner rounded">
+      <!-- HOST STRIP -->
+      <div class="locara-show__host-strip">
+        <div class="locara-show__host-info">
+          <strong>Entire property hosted by Locara Host</strong>
+          <span>Up to 6 guests · <%= listing.totalRooms || 1 %> rooms · Private space</span>
+        </div>
+        <div class="locara-show__host-avatar" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+      </div>
 
-            <% listing.images.forEach((img,index)=>{ %>
-              <div class="carousel-item <%= index===0 ? 'active':'' %>">
-                <img
-                  src="<%= img.url.startsWith('http') ? img.url : '/' + img.url %>"
-                  class="d-block w-100"
-                  style="height:360px; object-fit:cover;">
-              </div>
-            <% }) %>
+      <hr class="locara-show__divider">
 
+      <!-- HIGHLIGHTS -->
+      <ul class="locara-show__highlights" aria-label="Property highlights">
+        <li class="locara-show__highlight">
+          <span class="locara-show__highlight-icon">🏡</span>
+          <div>
+            <strong>Entire home</strong>
+            <span>You'll have the property all to yourself.</span>
           </div>
+        </li>
+        <li class="locara-show__highlight">
+          <span class="locara-show__highlight-icon">✨</span>
+          <div>
+            <strong>Enhanced clean</strong>
+            <span>This host follows Locara's enhanced cleaning process.</span>
+          </div>
+        </li>
+        <li class="locara-show__highlight">
+          <span class="locara-show__highlight-icon">🔑</span>
+          <div>
+            <strong>Self check-in</strong>
+            <span>Check yourself in with a keypad.</span>
+          </div>
+        </li>
+      </ul>
 
-          <% if(listing.images.length>1){ %>
-          <button class="carousel-control-prev" type="button" data-bs-target="#listingCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#listingCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-          </button>
-          <% } %>
+      <hr class="locara-show__divider">
+
+      <!-- DESCRIPTION -->
+      <section class="locara-show__description">
+        <h2 class="locara-show__section-title">About this stay</h2>
+        <p><%= listing.description %></p>
+      </section>
+
+      <hr class="locara-show__divider">
+
+      <!-- PRICE SUMMARY (mobile only) -->
+      <% if(showReserve){ %>
+      <section class="locara-show__price-summary">
+        <h2 class="locara-show__section-title">Pricing</h2>
+        <div class="locara-show__price-row">
+          <span>Base rate</span>
+          <span>₹<strong class="locara-show__price-accent"><%= listing.price %></strong> / night</span>
+        </div>
+        <div class="locara-show__price-row locara-show__price-row--muted">
+          <span>Taxes &amp; fees</span>
+          <span>Calculated at checkout</span>
+        </div>
+      </section>
+      <hr class="locara-show__divider">
+      <% } %>
+
+      <!-- MAP -->
+      <section class="locara-map-section" id="mapSection">
+        <h2 class="locara-map-section__title">Where you'll be</h2>
+        <div class="locara-map__canvas" id="listingMap"></div>
+      </section>
+
+    </main>
+
+    <!-- RIGHT — Booking Card ───────────────────────────────── -->
+    <aside class="locara-show__sidebar">
+      <div class="booking-card" id="bookingPanel">
+
+        <!-- PRICE HEADER -->
+        <div class="booking-card__price-header">
+          <span class="booking-card__price">
+            ₹<span id="priceDisplay" class="booking-card__price-value"><%= listing.price %></span>
+          </span>
+          <span class="booking-card__price-unit">/ night</span>
         </div>
 
-        <!-- DESCRIPTION -->
-        <p class="text-muted"><%= listing.description %></p>
+        <div class="booking-card__rating">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <strong>4.8</strong>
+          <span>· 128 reviews</span>
+        </div>
 
-        <!-- META -->
-        <div class="mb-2"><strong>Price:</strong> ₹ <%= listing.price %></div>
-        <div class="mb-2"><strong>Location:</strong> <%= listing.location %></div>
-        <div class="mb-3"><strong>Country:</strong> <%= listing.country %></div>
+        <hr class="booking-card__divider">
 
-        <!-- OWNER ACTIONS -->
-        <% if(currentUser && listing.owner &&
-            (listing.owner.toString() === currentUser._id.toString() ||
-             currentUser.role === "dev")){ %>
+        <% if(currentUser){ %>
 
-          <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark">Edit</a>
+        <!-- BOOKING FORM -->
+        <form id="bookingForm" action="/listings/<%= listing._id %>/book" method="POST" class="booking-card__form" novalidate>
 
-          <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST" class="d-inline">
-            <button class="btn btn-danger">Delete</button>
-          </form>
+          <div id="bookingMessage" class="booking-card__messages" aria-live="polite"></div>
+
+          <!-- BOOKING TYPE -->
+          <div class="booking-card__field">
+            <label class="booking-card__label" for="bookingType">Booking type</label>
+            <div class="booking-card__select-wrap">
+              <select name="bookingType" id="bookingType" class="booking-card__select">
+                <option value="whole">Whole property</option>
+                <option value="room">Rooms</option>
+              </select>
+              <svg class="booking-card__select-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+
+          <!-- ROOM COUNT -->
+          <div id="roomField" class="booking-card__field booking-card__field--hidden">
+            <label class="booking-card__label" for="roomsBooked">Number of rooms</label>
+            <input
+              type="number"
+              name="roomsBooked"
+              id="roomsBooked"
+              min="1"
+              max="<%= listing.totalRooms || 5 %>"
+              value="1"
+              class="booking-card__input"
+            >
+          </div>
+
+          <!-- DATE ROW -->
+          <div class="booking-card__date-row">
+            <div class="booking-card__field">
+              <label class="booking-card__label" for="checkIn">Check-in</label>
+              <input type="date" name="checkIn" id="checkIn" class="booking-card__input" required>
+            </div>
+            <div class="booking-card__date-sep" aria-hidden="true"></div>
+            <div class="booking-card__field">
+              <label class="booking-card__label" for="checkOut">Check-out</label>
+              <input type="date" name="checkOut" id="checkOut" class="booking-card__input" required>
+            </div>
+          </div>
+
+          <!-- GUESTS -->
+          <div class="booking-card__field">
+            <label class="booking-card__label" for="guests">Guests</label>
+            <input type="number" name="guests" id="guests" value="1" min="1" class="booking-card__input">
+          </div>
+
+          <!-- PRICE BREAKDOWN -->
+          <div class="booking-card__breakdown" id="priceBreakdown">
+            <div class="booking-card__breakdown-row">
+              <span>₹<span id="perNightBreakdown"><%= listing.price %></span> × <span id="nightCount">1</span> night<span id="nightPlural"></span></span>
+              <span>₹<span id="subtotalDisplay"><%= listing.price %></span></span>
+            </div>
+            <div class="booking-card__breakdown-row booking-card__breakdown-row--total">
+              <strong>Total</strong>
+              <strong>₹<span id="totalDisplay"><%= listing.price %></span></strong>
+            </div>
+          </div>
+
+          <button type="submit" id="reserveBtn" class="booking-card__reserve-btn">
+            Reserve
+          </button>
+
+          <p class="booking-card__disclaimer">You won't be charged yet</p>
+
+        </form>
+
+        <% } else { %>
+
+        <!-- NOT LOGGED IN -->
+        <div class="booking-card__login-prompt">
+          <p>Sign in to reserve this stay</p>
+          <a href="/login" class="booking-card__login-btn">Log in or sign up</a>
+        </div>
 
         <% } %>
 
-      </div>
-    </div>
+      </div><!-- /.booking-card -->
+    </aside>
 
-  </div>
+  </div><!-- /.locara-show__layout -->
+
+</div><!-- /.locara-show -->
 
 
-  <!-- ================= RIGHT — BOOKING ================= -->
-  
-  <% if(showReserve){ %>
-  <div class="col-lg-4">
-
-    <div class="card shadow-sm border-0 sticky-booking p-3" id="bookingPanel">
-
-      <h5 class="fw-bold mb-2">Reserve this stay</h5>
-      <hr>
-
-      <% if(currentUser){ %>
-
-      <form id="bookingForm" action="/listings/<%= listing._id %>/book" method="POST">
-        <div id="bookingMessage"></div>
-
-        <h5 class="fw-bold mb-3">
-          ₹ <span id="priceDisplay"><%= listing.price %></span>
-          <small class="text-muted">/ night</small>
-        </h5>
-
-        <label class="form-label">Booking Type</label>
-        <select name="bookingType" id="bookingType" class="form-select mb-2">
-          <option value="whole">Whole Property</option>
-          <option value="room">Rooms</option>
-        </select>
-
-        <div id="roomField" class="d-none">
-          <label class="form-label">Number of Rooms</label>
-          <input type="number"
-                 name="roomsBooked"
-                 id="roomsBooked"
-                 min="1"
-                 max="<%= listing.totalRooms || 5 %>"
-                 value="1"
-                 class="form-control mb-2">
-        </div>
-
-        <label class="form-label">Check In</label>
-        <input type="date" name="checkIn" class="form-control mb-2" required>
-
-        <label class="form-label">Check Out</label>
-        <input type="date" name="checkOut" class="form-control mb-2" required>
-
-        <label class="form-label">Guests</label>
-        <input type="number" name="guests" value="1" min="1" class="form-control mb-3">
-
-        <button id="reserveBtn" class="btn btn-dark w-100 fw-semibold">
-          Reserve
-        </button>
-
-      </form>
-
-      <% } else { %>
-
-      <div class="text-center">
-        <p class="text-muted">Login to reserve this stay</p>
-        <a href="/login" class="btn btn-dark w-100">Login</a>
-      </div>
-
-      <% } %>
-
-    </div>
-
-  </div>
-  <% } %>
-
-</div>
-
-</div>
-
+<!-- ── SCRIPTS ───────────────────────────────────────────────── -->
 <script>
-document.addEventListener("DOMContentLoaded", function(){
+(function () {
+  "use strict";
 
-  /*BOOKING UI LOGIC */
-
-  const form         = document.getElementById("bookingForm");
+  const form = document.getElementById("bookingForm");
   if (!form) return;
 
-  const bookingType  = document.getElementById("bookingType");
-  const roomField    = document.getElementById("roomField");
-  const roomsInput   = document.getElementById("roomsBooked");
-  const priceDisplay = document.getElementById("priceDisplay");
-  const btn          = form.querySelector("button");
+  const bookingTypeEl = document.getElementById("bookingType");
+  const roomFieldEl   = document.getElementById("roomField");
+  const roomsInput    = document.getElementById("roomsBooked");
+  const priceDisplay  = document.getElementById("priceDisplay");
+  const perNight      = document.getElementById("perNightBreakdown");
+  const nightCount    = document.getElementById("nightCount");
+  const nightPlural   = document.getElementById("nightPlural");
+  const subtotal      = document.getElementById("subtotalDisplay");
+  const total         = document.getElementById("totalDisplay");
+  const reserveBtn    = document.getElementById("reserveBtn");
 
-  const wholePrice   = Number("<%= listing.price %>");
-  const totalRooms   = Number("<%= listing.totalRooms || 1 %>");
-  const roomPrice    = wholePrice / totalRooms;
+  const WHOLE_PRICE = Number("<%= listing.price %>");
+  const TOTAL_ROOMS = Number("<%= listing.totalRooms || 1 %>");
+  const ROOM_PRICE  = WHOLE_PRICE / TOTAL_ROOMS;
 
-
-  /* PRICE CALCULATION */
-
-  function getNights(){
-    const checkIn  = new Date(form.checkIn.value);
-    const checkOut = new Date(form.checkOut.value);
-
+  function getNights() {
+    const ci = new Date(form.checkIn.value);
+    const co = new Date(form.checkOut.value);
     if (!form.checkIn.value || !form.checkOut.value) return 1;
-
-    const diff = checkOut - checkIn;
-    const nights = Math.ceil(diff / (1000 * 60 * 60 * 24));
-
-    return nights > 0 ? nights : 1;
+    const n = Math.ceil((co - ci) / 86400000);
+    return n > 0 ? n : 1;
   }
 
-  function updatePrice(){
+  function fmt(n) { return Math.round(n).toLocaleString("en-IN"); }
 
-    const type   = bookingType.value;
+  function updatePrice() {
+    const isRoom = bookingTypeEl.value === "room";
     const rooms  = Number(roomsInput?.value) || 1;
     const nights = getNights();
+    const ratePN = isRoom ? Math.round(ROOM_PRICE * rooms) : WHOLE_PRICE;
+    const sub    = ratePN * nights;
 
-    if(type === "room"){
-      roomField.classList.remove("d-none");
-      priceDisplay.textContent = Math.round(roomPrice * rooms * nights);
-    } else {
-      roomField.classList.add("d-none");
-      priceDisplay.textContent = wholePrice * nights;
-    }
+    roomFieldEl.classList.toggle("booking-card__field--hidden", !isRoom);
+
+    if (priceDisplay) priceDisplay.textContent = fmt(ratePN);
+    if (perNight)     perNight.textContent     = fmt(ratePN);
+    if (nightCount)   nightCount.textContent   = nights;
+    if (nightPlural)  nightPlural.textContent  = nights !== 1 ? "s" : "";
+    if (subtotal)     subtotal.textContent     = fmt(sub);
+    if (total)        total.textContent        = fmt(sub);
   }
 
-  bookingType.addEventListener("change", updatePrice);
+  bookingTypeEl.addEventListener("change", updatePrice);
   roomsInput?.addEventListener("input", updatePrice);
   form.checkIn.addEventListener("change", updatePrice);
   form.checkOut.addEventListener("change", updatePrice);
-
   updatePrice();
 
-
-  /* FORM SUBMISSION (AJAX) */
-
-  form.addEventListener("submit", async function(e){
-
-    e.preventDefault();
-
-    btn.disabled = true;
-    btn.innerText = "Processing...";
-
-    const data = {
-      checkIn: this.checkIn.value,
-      checkOut: this.checkOut.value,
-      guests: this.guests.value,
-      bookingType: this.bookingType.value,
-      roomsBooked: this.roomsBooked?.value
-    };
-
-    try {
-
-      const response = await fetch(this.action, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-
-      const result = await response.json();
-
-      showToast(result.message, result.success ? "success" : "error");
-
-    } catch (err) {
-      if (!response.ok) {
-      showToast("Server error. Please try again.", "error");
-      btn.disabled = false;
-      btn.innerText = "Reserve";
-      return;
-  }
+  const today = new Date().toISOString().split("T")[0];
+  form.checkIn.setAttribute("min", today);
+  form.checkIn.addEventListener("change", function () {
+    form.checkOut.setAttribute("min", this.value);
+    if (form.checkOut.value && form.checkOut.value <= this.value) {
+      form.checkOut.value = "";
     }
-
-    btn.disabled = false;
-    btn.innerText = "Reserve";
-
+    updatePrice();
   });
 
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    reserveBtn.disabled = true;
+    reserveBtn.textContent = "Processing…";
 
-  /* INLINE TOAST SYSTEM */
+    const payload = {
+      checkIn:     form.checkIn.value,
+      checkOut:    form.checkOut.value,
+      guests:      form.guests.value,
+      bookingType: form.bookingType.value,
+      roomsBooked: form.roomsBooked?.value,
+    };
 
-  function showToast(message, type){
+    let response;
+    try {
+      response = await fetch(form.action, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      if (result.success && result.redirect) {
+        window.location.href = result.redirect;
+      } else {
+        showMessage(result.message, "error");
+      }
+    } catch {
+      showMessage("Something went wrong. Please try again.", "error");
+    } finally {
+      reserveBtn.disabled = false;
+      reserveBtn.textContent = "Reserve";
+    }
+  });
 
+  function showMessage(text, type) {
     const container = document.getElementById("bookingMessage");
-    if(!container) return;
-
+    if (!container) return;
     container.innerHTML = "";
-
-    const div = document.createElement("div");
-    div.className = "inline-toast " + (type === "error" ? "error" : "");
-    div.innerText = message;
-
-    container.appendChild(div);
-
-    setTimeout(()=>{
-      div.style.opacity = "0";
-      setTimeout(()=> div.remove(), 300);
-    }, 2500);
+    const el = document.createElement("div");
+    el.className = "booking-card__toast booking-card__toast--" + type;
+    el.textContent = text;
+    container.appendChild(el);
+    setTimeout(() => {
+      el.style.opacity = "0";
+      setTimeout(() => el.remove(), 300);
+    }, 3000);
   }
-
-});
+})();
 </script>
 
-
-
+<script>
+  window.LOCARA_LISTING = <%- JSON.stringify({
+    lat:      listing.geometry && listing.geometry.coordinates ? listing.geometry.coordinates[1] : 28.6139,
+    lng:      listing.geometry && listing.geometry.coordinates ? listing.geometry.coordinates[0] : 77.2090,
+    title:    listing.title,
+    price:    listing.price,
+    location: listing.location,
+  }) %>;
+</script>
 
 <script src="/js/map.js"></script>

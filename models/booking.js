@@ -60,9 +60,17 @@ totalPrice: {
 
   status: {
     type: String,
-    enum: [, "confirmed", "cancelled"],
-    default: "confirmed"
-  }
+    enum: ["pending", "confirmed", "cancelled"],
+    default: "pending"
+  },
+
+  paymentStatus: {
+  type: String,
+  enum: ["paid", "unpaid", "pending"],
+  default: "unpaid"
+},
+  razorpayOrderId:   { type: String, default: null },
+  razorpayPaymentId: { type: String, default: null }
 
 }, { timestamps: true });
 

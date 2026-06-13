@@ -1,0 +1,235 @@
+
+/* === Listings Page ==== */
+
+.listings-page {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+.listings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.listing-card-link{
+  text-decoration:none;
+  color:inherit;
+  display:block;
+}
+
+.listing-card{
+  cursor:pointer;
+}
+.header-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 6px;
+}
+
+.header-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 900;
+  margin: 0 0 6px;
+  color: var(--color-text);
+}
+
+.title-accent { color: var(--color-primary); font-style: italic; }
+.header-sub { font-size: 0.9rem; color: var(--color-text-light); margin: 0; }
+
+.listing-count-badge {
+  background: var(--color-accent-soft);
+  color: var(--color-primary);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #e9d5ff;
+}
+
+.filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+
+.filter-chip {
+  padding: 7px 18px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--t-base);
+}
+
+.filter-chip:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.filter-chip.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+
+
+/*=======  7. Grid System = */
+
+.listings-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:24px;
+  width:100%;
+}
+
+/* ============================================================
+   MOBILE BOTTOM NAV — Locara Design System
+   Visible below lg breakpoint only (Bootstrap d-lg-none)
+   ============================================================ */
+
+/* ── Bar ─────────────────────────────────────────────────────── */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--ls-surface, #ffffff);
+  border-top: 1px solid var(--ls-border, #e7e5e4);
+  box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.08);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ── List ────────────────────────────────────────────────────── */
+.mb-nav {
+  display: flex;
+  align-items: stretch;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Item ────────────────────────────────────────────────────── */
+.mb-nav__item {
+  flex: 1;
+  display: flex;
+}
+
+/* ── Form reset ──────────────────────────────────────────────── */
+.mb-nav__form {
+  flex: 1;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Link / Button (shared token) ────────────────────────────── */
+.mb-nav__link,
+.mb-nav__button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 8px 8px;
+  min-height: 60px;
+
+  color: var(--ls-text-muted, #78716c);
+  text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+
+  transition: color 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Icon ────────────────────────────────────────────────────── */
+.mb-nav__icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.18s ease;
+  display: block;
+}
+
+/* ── Label ───────────────────────────────────────────────────── */
+.mb-nav__label {
+  display: block;
+  line-height: 1;
+}
+
+/* ── Active ──────────────────────────────────────────────────── */
+.mb-nav__link--active {
+  color: var(--ls-accent, #0f766e);
+}
+
+.mb-nav__link--active .mb-nav__icon {
+  transform: translateY(-2px) scale(1.1);
+}
+
+/* Top pip */
+.mb-nav__link--active::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 2.5px;
+  border-radius: 0 0 4px 4px;
+  background: var(--ls-accent, #0f766e);
+}
+
+/* ── Focus ───────────────────────────────────────────────────── */
+.mb-nav__link:focus-visible,
+.mb-nav__button:focus-visible {
+  outline: 2px solid var(--ls-accent, #0f766e);
+  outline-offset: -3px;
+  border-radius: 8px;
+}
+
+/* ── Hover (pointer devices only) ───────────────────────────── */
+@media (hover: hover) {
+  .mb-nav__link:hover,
+  .mb-nav__button:hover {
+    color: var(--ls-accent, #0f766e);
+  }
+
+  .mb-nav__link:hover .mb-nav__icon,
+  .mb-nav__button:hover .mb-nav__icon {
+    transform: translateY(-2px) scale(1.08);
+  }
+}
+
+/* ── Tap ripple ──────────────────────────────────────────────── */
+.mb-nav__link::before,
+.mb-nav__button::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 10px;
+  background: var(--ls-accent-light, #f0fdfa);
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+}
+
+.mb-nav__link:active::before,
+.mb-nav__button:active::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── Body offset — content clears the bar ────────────────────── */
+@media (max-width: 991.98px) {
+  body {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+}

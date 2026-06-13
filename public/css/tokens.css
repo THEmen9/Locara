@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600&display=swap');
+
+:root {
+  
+  /* Brand */
+  --color-primary:#134e4a;
+  --color-primary-dark:#134e4a;
+  --color-indigo:#0f766e;
+  --color-accent-soft:#f3f0ff;
+
+  /* Neutral */
+  --color-text:#0f172a;
+  --color-text-mid:#374151;
+  --color-text-light:#64748b;
+  --color-text-muted:#94a3b8;
+  --color-border:#e2e8f0;
+  --color-bg:#ffffff;
+  --color-surface:#f8fafc;
+
+  /* Status */
+  --color-success:#10b981;
+  --color-danger:#dc2626;
+
+  /* Radius */
+  --radius-sm:10px;
+  --radius-md:14px;
+  --radius-lg:20px;
+  --radius-xl:22px;
+  --radius-full:999px;
+
+  /* Shadow */
+  --shadow-sm:0 4px 18px rgba(0,0,0,0.06);
+  --shadow-md:0 12px 36px rgba(0,0,0,0.12);
+  --shadow-card:0 6px 22px rgba(0,0,0,0.06);
+
+  /* Transitions */
+  --t-fast:0.15s ease;
+  --t-base:0.2s ease;
+  --t-slow:0.3s ease;
+  --t-spring:0.35s cubic-bezier(.4,0,.2,1);
+
+  /* compatibility */
+  --accent:#134e4a;
+  --radius-card:20px;
+  --transition:all 0.3s ease;
+
+/* ── 0. CSS custom properties (show-page scope) ─────────────── */
+
+  --ls-accent:          #0f766e;   /* teal-700  – brand */
+  --ls-accent-deep:     #134e4a;   /* teal-900  – deep hover */
+  --ls-accent-light:    #ccfbf1;   /* teal-100  – soft bg */
+  --ls-gold:            #f59e0b;   /* amber for stars */
+
+  --ls-text:            #1c1917;
+  --ls-text-muted:      #78716c;
+  --ls-text-light:      #a8a29e;
+
+  --ls-bg:              #fffdf9;   /* warm off-white */
+  --ls-surface:         #ffffff;
+  --ls-border:          #e7e5e4;
+  --ls-border-hover:    #d6d3d1;
+
+  --ls-radius-card:     16px;
+  --ls-radius-sm:       10px;
+  --ls-radius-xs:       6px;
+
+  --ls-shadow-card:     0 1px 3px rgba(0,0,0,.06), 0 6px 24px rgba(0,0,0,.08);
+  --ls-shadow-hover:    0 4px 12px rgba(0,0,0,.1),  0 16px 40px rgba(0,0,0,.1);
+  --ls-shadow-btn:      0 4px 14px rgba(15,118,110,.35);
+  --ls-shadow-btn-hov:  0 6px 20px rgba(15,118,110,.5);
+
+  --ls-transition:      180ms ease;
+  --ls-transition-med:  280ms cubic-bezier(0.22, 1, 0.36, 1);
+}

@@ -16,6 +16,7 @@
   "dependencies": {
     "@mapbox/mapbox-sdk": "^0.16.2",
     "bcryptjs": "^3.0.3",
+    "cdn": "^1.1.1",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^6.0.0",
     "dotenv": "^17.2.4",
@@ -26,7 +27,8 @@
     "mongoose": "7.6.3",
     "nodemailer": "^8.0.1",
     "passport": "^0.7.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "razorpay": "^2.9.6"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

@@ -1,0 +1,291 @@
+/* ============================================================
+   NEW LISTING FORM — Locara Design System
+   Cohesive with show page. Token-driven. Production-ready.
+   ============================================================ */
+
+/* ── 1. Page shell ───────────────────────────────────────────── */
+.locara-form-page {
+  min-height: 100vh;
+  background: var(--ls-bg, #f7f7f5);
+  padding: 48px 20px 80px;
+  box-sizing: border-box;
+}
+
+/* ── 2. Form card ────────────────────────────────────────────── */
+.locara-form-card {
+  position: relative;
+  margin: 0 auto;
+  max-width: 640px;
+  width: 100%;
+  background: var(--ls-surface, #ffffff);
+  border-radius: var(--ls-radius-card, 18px);
+  border: 1px solid var(--ls-border, #e7e5e4);
+  box-shadow: var(--ls-shadow-card, 0 4px 24px rgba(15, 23, 42, 0.08));
+  padding: 40px 40px 36px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Top accent bar — mirrors booking card */
+.locara-form-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--ls-accent, #0f766e), #14b8a6, var(--ls-accent, #0f766e));
+  background-size: 200%;
+  animation: formAccentBar 4s linear infinite;
+}
+
+@keyframes formAccentBar {
+  0%   { background-position: 0%   50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* ── 3. Header ───────────────────────────────────────────────── */
+.locara-form-head {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.locara-form-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ls-accent, #0f766e);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  margin-bottom: 10px;
+}
+
+.locara-form-head h1 {
+  font-family: 'Sora', sans-serif;
+  margin: 0 0 12px;
+  font-size: clamp(1.6rem, 4vw, 2rem);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--ls-text, #1c1917);
+}
+
+.locara-form-copy {
+  margin: 0 auto;
+  max-width: 480px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--ls-text-muted, #78716c);
+}
+
+/* ── 4. Form layout ──────────────────────────────────────────── */
+.locara-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.locara-field-group {
+  margin-bottom: 20px;
+}
+
+.locara-field-label {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ls-text-muted, #78716c);
+}
+
+/* ── 5. Inputs & Textarea ────────────────────────────────────── */
+.locara-input,
+.locara-textarea {
+  width: 100%;
+  border-radius: var(--ls-radius-sm, 10px);
+  border: 1.5px solid var(--ls-border, #e7e5e4);
+  background: var(--ls-bg, #fafaf9);
+  color: var(--ls-text, #1c1917);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  padding: 13px 14px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.locara-textarea {
+  min-height: 130px;
+  resize: vertical;
+  line-height: 1.7;
+  padding: 14px;
+}
+
+.locara-input::placeholder,
+.locara-textarea::placeholder {
+  color: var(--ls-text-light, #a8a29e);
+}
+
+.locara-input:hover,
+.locara-textarea:hover {
+  border-color: #c4c4c2;
+}
+
+.locara-input:focus,
+.locara-textarea:focus {
+  border-color: var(--ls-accent, #0f766e);
+  background: var(--ls-surface, #ffffff);
+  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.10);
+}
+
+/* ── 6. Two-column grid ──────────────────────────────────────── */
+.locara-form-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* ── 7. File upload card ─────────────────────────────────────── */
+.locara-file-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px 18px;
+  background: var(--ls-bg, #fafaf9);
+  border: 1.5px dashed var(--ls-border, #e7e5e4);
+  border-radius: var(--ls-radius-sm, 10px);
+  cursor: pointer;
+  min-height: 116px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  box-sizing: border-box;
+}
+
+.locara-file-card:hover,
+.locara-file-card:focus-visible {
+  border-color: var(--ls-accent, #0f766e);
+  background: var(--ls-accent-light, #f0fdfa);
+  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.08);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.locara-file-card--small {
+  padding: 18px 14px;
+  min-height: 96px;
+}
+
+.locara-file-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ls-text, #1c1917);
+}
+
+.locara-file-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  color: var(--ls-text-muted, #78716c);
+  line-height: 1.4;
+}
+
+.locara-file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* ── 8. Button system ────────────────────────────────────────── */
+.locara-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, var(--ls-accent, #0f766e) 0%, #14b8a6 100%);
+  color: #fff;
+  border: none;
+  border-radius: var(--ls-radius-sm, 10px);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  box-shadow: var(--ls-shadow-btn, 0 4px 14px rgba(15, 118, 110, 0.35));
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+/* Shimmer sweep */
+.locara-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.locara-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ls-shadow-btn-hov, 0 8px 24px rgba(15, 118, 110, 0.4));
+}
+
+.locara-btn:hover::after {
+  transform: translateX(100%);
+}
+
+.locara-btn:active {
+  transform: translateY(0);
+}
+
+.locara-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Dark variant */
+.locara-btn--dark {
+  background: #1c1917;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.locara-btn--dark:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+/* Wide (full-width, slightly taller) */
+.locara-btn--wide {
+  padding: 15px 20px;
+  font-size: 0.925rem;
+}
+
+/* ── 9. Divider ──────────────────────────────────────────────── */
+.locara-form-divider {
+  border: none;
+  border-top: 1px solid var(--ls-border, #e7e5e4);
+  margin: 28px 0;
+}
+
