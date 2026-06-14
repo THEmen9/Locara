@@ -1,194 +1,368 @@
+<div class="explore-page">
 
-<div class="listings-page">
-
-  <!-- ===== Header ===== -->
-  <div class="listings-header">
+  <!-- Header -->
+  <div class="explore-header">
     <div>
-      <span class="header-eyebrow">Discover</span>
-      <h1 class="header-title">
-        Explore <span class="title-accent">Stays</span>
+      <span class="explore-eyebrow">Discover</span>
+      <h1 class="explore-title">
+        Explore <span class="explore-title-accent">Stays</span>
       </h1>
-      <p class="header-sub">
-        Handpicked places that feel like home
-      </p>
+      <p class="explore-subtitle">Handpicked places that feel like home</p>
     </div>
 
-    <span class="listing-count-badge">
+    <span class="explore-count-badge">
       <i class="bi bi-buildings"></i>
       <%= allListings.length %> stays available
     </span>
   </div>
 
-  <!-- ===== Filters ===== -->
-  <div class="filter-bar">
-    <button class="filter-chip active" data-filter="all">All</button>
-    <button class="filter-chip" data-filter="verified">
-      <i class="bi bi-patch-check-fill"></i> Verified
-    </button>
-    <button class="filter-chip" data-filter="photos">
-      Multiple Photos
+  <!-- Toolbar: quick filter chips + Filters button -->
+  <div class="explore-toolbar">
+    <div class="explore-chips">
+      <button class="filter-chip active" data-filter="all">All</button>
+      <button class="filter-chip" data-filter="verified">
+        <i class="bi bi-patch-check-fill"></i> Verified
+      </button>
+      <button class="filter-chip" data-filter="photos">Multiple Photos</button>
+    </div>
+
+    <button class="filters-btn" id="openFiltersBtn" aria-haspopup="dialog">
+      <i class="bi bi-sliders"></i>
+      Filters
     </button>
   </div>
 
-  <!-- ===== Empty State ===== -->
+  <!-- Filter Modal -->
+  <div class="filter-modal-overlay" id="filterOverlay" role="dialog" aria-modal="true" aria-label="Filter listings">
+    <div class="filter-modal">
+      <div class="filter-modal__header">
+        <h2 class="filter-modal__title">Filter stays</h2>
+        <button class="filter-modal__close" id="closeFiltersBtn" aria-label="Close filters">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
 
+      <!-- Category -->
+      <div class="filter-section">
+        <label class="filter-section__label" for="filterCategory">Category</label>
+        <select class="filter-select" id="filterCategory">
+          <option value="">All categories</option>
+          <option value="villa">Villa</option>
+          <option value="apartment">Apartment</option>
+          <option value="cottage">Cottage</option>
+          <option value="resort">Resort</option>
+          <option value="farmhouse">Farmhouse</option>
+          <option value="treehouse">Treehouse</option>
+        </select>
+      </div>
+
+      <!-- Price Range -->
+      <div class="filter-section">
+        <label class="filter-section__label">Price per night</label>
+        <div class="filter-range-row">
+          <input class="filter-input" type="number" id="filterPriceMin" placeholder="Min ₹" min="0">
+          <span class="filter-range-sep">–</span>
+          <input class="filter-input" type="number" id="filterPriceMax" placeholder="Max ₹" min="0">
+        </div>
+      </div>
+
+      <!-- Rooms -->
+      <div class="filter-section">
+        <label class="filter-section__label" for="filterRooms">Rooms</label>
+        <select class="filter-select" id="filterRooms">
+          <option value="">Any</option>
+          <option value="1">1+</option>
+          <option value="2">2+</option>
+          <option value="3">3+</option>
+          <option value="4">4+</option>
+          <option value="5">5+</option>
+        </select>
+      </div>
+
+      <!-- Guests -->
+      <div class="filter-section">
+        <label class="filter-section__label" for="filterGuests">Guests</label>
+        <select class="filter-select" id="filterGuests">
+          <option value="">Any</option>
+          <option value="1">1+</option>
+          <option value="2">2+</option>
+          <option value="4">4+</option>
+          <option value="6">6+</option>
+          <option value="10">10+</option>
+        </select>
+      </div>
+
+      <!-- Country -->
+      <div class="filter-section">
+        <label class="filter-section__label" for="filterCountry">Country</label>
+        <input class="filter-input" type="text" id="filterCountry" placeholder="e.g. India, France…">
+      </div>
+
+      <div class="filter-modal__actions">
+        <button class="filter-btn-clear" id="clearFiltersBtn">Clear all</button>
+        <button class="filter-btn-apply" id="applyFiltersBtn">Show stays</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
   <% if (!allListings || allListings.length === 0) { %>
-    <div class="empty-state">
+    <div class="explore-empty">
       <i class="bi bi-house-slash" style="font-size:3rem; opacity:.4;"></i>
       <h3>No stays found</h3>
-      <p>No stays match your current filters.
-        Try reducing guests or changing destination.</p>
-
+      <p>No stays match your current filters. Try adjusting your search.</p>
       <% if (currentUser) { %>
-        <a href="/listings/new"
-           class="locara-btn locara-btn--primary">
-           <i class="bi bi-plus-circle"></i>
-           Host your Stay
+        <a href="/listings/new" class="locara-btn locara-btn--primary">
+          <i class="bi bi-plus-circle"></i> Host your Stay
         </a>
       <% } %>
     </div>
   <% } %>
 
-  <!-- ===== Grid ===== -->
-  <div class="listings-grid">
-
-    <% allListings.forEach(listing => { %>
-
+  <!-- ══ Listings Grid ══ -->
+  <div class="listings-grid" id="listingsGrid">
+    <% allListings.forEach((listing, index) => { %>
       <%
         const isOwner = currentUser &&
           listing.owner &&
           (listing.owner._id.toString() === currentUser._id.toString() ||
            currentUser.role === "dev");
       %>
-    <a href="/listings/<%= listing._id %>" class="listing-card-link">
 
-      <div class="listing-card"
-           data-verified="<%= listing.isVerifiedOwner ? 'true' : 'false' %>"
-           data-photos="<%= (listing.images && listing.images.length > 1) ? 'true' : 'false' %>">
+      <a
+        href="/listings/<%= listing._id %>"
+        class="listing-card-link"
+        data-index="<%= index %>"
+        data-hidden="<%= index >= 8 ? 'true' : 'false' %>"
+        data-verified="<%= listing.isVerifiedOwner ? 'true' : 'false' %>"
+        data-photos="<%= (listing.images && listing.images.length > 1) ? 'true' : 'false' %>"
+        data-price="<%= listing.price || 0 %>"
+        data-rooms="<%= listing.rooms || listing.bedrooms || 0 %>"
+        data-guests="<%= listing.guests || listing.maxGuests || 0 %>"
+        data-country="<%= (listing.country || '').toLowerCase() %>"
+        data-category="<%= (listing.category || '').toLowerCase() %>"
+      >
+        <div class="listing-card">
 
-        <!-- ===== Image ===== -->
-        <div class="card-image-wrap">
-          <img
-            src="<%= listing.images && listing.images.length
-                    ? listing.images[0].url
-                    : '/images/default.jpg' %>"
-            alt="<%= listing.title %>"
-            class="card-img"
-            loading="lazy"
-            onerror="this.onerror=null; this.src='/images/default.jpg';">
-            
-        </div>
+          <!-- Image -->
+          <div class="card-img-wrap">
+            <img
+              src="<%= listing.images && listing.images.length ? listing.images[0].url : '/images/default.jpg' %>"
+              alt="<%= listing.title %>"
+              class="card-img"
+              loading="lazy"
+              onerror="this.onerror=null; this.src='/images/default.jpg';">
 
-        <!-- ===== Body ===== -->
-         
-      <div class="card-body-inner">
+            <!-- Wishlist heart -->
+            <button
+              class="card-wishlist-btn"
+              aria-label="Save to wishlist"
+              data-id="<%= listing._id %>"
+              onclick="event.preventDefault(); toggleWishlist(this)">
+              <i class="bi bi-heart"></i>
+            </button>
+          </div>
 
-        <div class="card-top-row">
-          <h3 class="card-listing-title">
-            <%= listing.title %>
-          </h3>
+          <!-- Body -->
+          <div class="card-body">
 
-          <span class="rating-badge">
-            ⭐ 4.8
-          </span>
-        </div>
+            <h3 class="card-title"><%= listing.title %></h3>
 
-        <% if (listing.location || listing.country) { %>
-          <p class="card-location">
-            <i class="bi bi-geo-alt"></i>
-            <%= [listing.location, listing.country]
-                  .filter(Boolean)
-                  .join(', ') %>
-          </p>
-        <% } %>
+            <div class="card-rating">
+              ⭐ 4.8
+              <span class="card-rating-count">(124)</span>
+            </div>
 
-        <div class="card-bottom-row">
-          <div class="price-info">
-            <span class="price-value">
-              ₹ <%= listing.price.toLocaleString('en-IN') %>
-            </span>
-            <span class="price-unit">/ night</span>
+            <% if (listing.location || listing.country) { %>
+              <p class="card-location">
+                <i class="bi bi-geo-alt"></i>
+                <%= [listing.location, listing.country].filter(Boolean).join(', ') %>
+              </p>
+            <% } %>
+
+            <div class="card-price-row">
+              <span class="card-price-amount">₹ <%= listing.price.toLocaleString('en-IN') %></span>
+              <span class="card-price-unit">/ night</span>
+            </div>
+
           </div>
         </div>
+      </a>
 
-      </div>
-
-      </div>
-       </a>
     <% }) %>
   </div>
 
+  <!-- Load More -->
+  <div class="load-more-wrap">
+    <% if (allListings.length > 8) { %>
+      <button class="load-more-btn" id="loadMoreBtn">
+        <i class="bi bi-arrow-down-circle"></i>
+        Show more stays
+      </button>
+    <% } %>
+  </div>
 
-  <!-- ===== Mobile Bottom Nav ===== -->
 
- 
-<nav class="mobile-bottom-nav d-lg-none" aria-label="Mobile navigation">
-  <ul class="mb-nav">
-
-    <li class="mb-nav__item">
-      <a href="/listings" class="mb-nav__link mb-nav__link--active" aria-current="page">
-        <i class="bi bi-search mb-nav__icon" aria-hidden="true"></i>
-        <span class="mb-nav__label">Explore</span>
-      </a>
-    </li>
-
-    <li class="mb-nav__item">
-      <a href="/wishlists" class="mb-nav__link">
-        <i class="bi bi-heart mb-nav__icon" aria-hidden="true"></i>
-        <span class="mb-nav__label">Wishlists</span>
-      </a>
-    </li>
-
-    <% if (currentUser) { %>
+  <!-- Mobile Bottom Nav (unchanged) -->
+  <nav class="mobile-bottom-nav d-lg-none" aria-label="Mobile navigation">
+    <ul class="mb-nav">
       <li class="mb-nav__item">
-        <form action="/logout" method="POST" class="mb-nav__form">
-          <button type="submit" class="mb-nav__link mb-nav__button">
-            <i class="bi bi-box-arrow-right mb-nav__icon" aria-hidden="true"></i>
-            <span class="mb-nav__label">Log out</span>
-          </button>
-        </form>
-      </li>
-    <% } else { %>
-      <li class="mb-nav__item">
-        <a href="/login" class="mb-nav__link">
-          <i class="bi bi-person mb-nav__icon" aria-hidden="true"></i>
-          <span class="mb-nav__label">Log in</span>
+        <a href="/listings" class="mb-nav__link mb-nav__link--active" aria-current="page">
+          <i class="bi bi-search mb-nav__icon" aria-hidden="true"></i>
+          <span class="mb-nav__label">Explore</span>
         </a>
       </li>
-    <% } %>
+      <li class="mb-nav__item">
+        <a href="/wishlists" class="mb-nav__link">
+          <i class="bi bi-heart mb-nav__icon" aria-hidden="true"></i>
+          <span class="mb-nav__label">Wishlists</span>
+        </a>
+      </li>
+      <% if (currentUser) { %>
+        <li class="mb-nav__item">
+          <form action="/logout" method="POST" class="mb-nav__form">
+            <button type="submit" class="mb-nav__link mb-nav__button">
+              <i class="bi bi-box-arrow-right mb-nav__icon" aria-hidden="true"></i>
+              <span class="mb-nav__label">Log out</span>
+            </button>
+          </form>
+        </li>
+      <% } else { %>
+        <li class="mb-nav__item">
+          <a href="/login" class="mb-nav__link">
+            <i class="bi bi-person mb-nav__icon" aria-hidden="true"></i>
+            <span class="mb-nav__label">Log in</span>
+          </a>
+        </li>
+      <% } %>
+    </ul>
+  </nav>
 
-  </ul>
-</nav>
-
-</div>
+</div><!-- /.explore-page -->
 
 
 <script>
 (function () {
+
+  /* ─── Quick filter chips ─── */
   const chips = document.querySelectorAll('.filter-chip');
-  const cards = document.querySelectorAll('.listing-card');
+  const grid  = document.getElementById('listingsGrid');
+
+  function getVisibleLinks() {
+    return Array.from(grid.querySelectorAll('.listing-card-link'));
+  }
 
   chips.forEach(chip => {
     chip.addEventListener('click', function () {
-
       chips.forEach(c => c.classList.remove('active'));
       this.classList.add('active');
-
-      const filter = this.dataset.filter;
-
-      cards.forEach(card => {
-        if (filter === 'all') {
-          card.style.display = '';
-        } else if (filter === 'verified') {
-          card.style.display =
-            card.dataset.verified === 'true' ? '' : 'none';
-        } else if (filter === 'photos') {
-          card.style.display =
-            card.dataset.photos === 'true' ? '' : 'none';
-        }
+      const f = this.dataset.filter;
+      getVisibleLinks().forEach(link => {
+        const show =
+          f === 'all' ? true :
+          f === 'verified' ? link.dataset.verified === 'true' :
+          f === 'photos'   ? link.dataset.photos   === 'true' : true;
+        link.style.display = show ? '' : 'none';
       });
-
+      resetLoadMore();
     });
   });
+
+  /* ─── Filter modal ─── */
+  const overlay      = document.getElementById('filterOverlay');
+  const openBtn      = document.getElementById('openFiltersBtn');
+  const closeBtn     = document.getElementById('closeFiltersBtn');
+  const applyBtn     = document.getElementById('applyFiltersBtn');
+  const clearBtn     = document.getElementById('clearFiltersBtn');
+
+  openBtn.addEventListener('click', () => overlay.classList.add('open'));
+  closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+
+  applyBtn.addEventListener('click', () => {
+    const category = document.getElementById('filterCategory').value.toLowerCase();
+    const priceMin = parseFloat(document.getElementById('filterPriceMin').value) || 0;
+    const priceMax = parseFloat(document.getElementById('filterPriceMax').value) || Infinity;
+    const rooms    = parseInt(document.getElementById('filterRooms').value)    || 0;
+    const guests   = parseInt(document.getElementById('filterGuests').value)   || 0;
+    const country  = document.getElementById('filterCountry').value.trim().toLowerCase();
+
+    getVisibleLinks().forEach(link => {
+      const matchCat     = !category || link.dataset.category.includes(category);
+      const price        = parseFloat(link.dataset.price) || 0;
+      const matchPrice   = price >= priceMin && price <= priceMax;
+      const matchRooms   = !rooms   || parseInt(link.dataset.rooms)  >= rooms;
+      const matchGuests  = !guests  || parseInt(link.dataset.guests) >= guests;
+      const matchCountry = !country || link.dataset.country.includes(country);
+
+      const show = matchCat && matchPrice && matchRooms && matchGuests && matchCountry;
+      link.style.display = show ? '' : 'none';
+      link.dataset.hidden = show ? 'false' : 'true';
+    });
+
+    overlay.classList.remove('open');
+    resetLoadMore();
+  });
+
+  clearBtn.addEventListener('click', () => {
+    ['filterCategory','filterPriceMin','filterPriceMax',
+     'filterRooms','filterGuests','filterCountry']
+      .forEach(id => { document.getElementById(id).value = ''; });
+  });
+
+  /* ─── Load More ─── */
+  const BATCH = 8;
+  let loaded  = 8;
+  const loadMoreBtn = document.getElementById('loadMoreBtn');
+
+  function resetLoadMore() {
+    loaded = 8;
+    getVisibleLinks().forEach((link, i) => {
+      if (link.style.display === 'none') return;
+      const visible = Array.from(getVisibleLinks()).filter(l => l.style.display !== 'none');
+      // Already handled by filter; just sync button
+    });
+    syncLoadMoreBtn();
+  }
+
+  function syncLoadMoreBtn() {
+    if (!loadMoreBtn) return;
+    const all    = getVisibleLinks().filter(l => l.style.display !== 'none' || !l.style.display);
+    const hidden = all.filter(l => l.dataset.hidden === 'true');
+    loadMoreBtn.hidden = hidden.length === 0;
+  }
+
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', () => {
+      let shown = 0;
+      getVisibleLinks().forEach(link => {
+        if (shown >= BATCH) return;
+        if (link.dataset.hidden === 'true') {
+          link.dataset.hidden = 'false';
+          link.style.display  = '';
+          link.classList.remove('card-entering');
+          void link.offsetWidth; // force reflow for animation
+          link.classList.add('card-entering');
+          shown++;
+          loaded++;
+        }
+      });
+      syncLoadMoreBtn();
+    });
+  }
+
+  syncLoadMoreBtn();
+
+  /* ─── Wishlist toggle ─── */
+  window.toggleWishlist = function(btn) {
+    btn.classList.toggle('wishlisted');
+    const icon = btn.querySelector('i');
+    if (btn.classList.contains('wishlisted')) {
+      icon.classList.replace('bi-heart', 'bi-heart-fill');
+    } else {
+      icon.classList.replace('bi-heart-fill', 'bi-heart');
+    }
+  };
+
 }());
 </script>

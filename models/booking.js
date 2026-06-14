@@ -69,8 +69,13 @@ totalPrice: {
   enum: ["paid", "unpaid", "pending"],
   default: "unpaid"
 },
+
   razorpayOrderId:   { type: String, default: null },
-  razorpayPaymentId: { type: String, default: null }
+  razorpayPaymentId: { type: String, default: null },
+    
+  expiresAt: {
+    type: Date
+}
 
 }, { timestamps: true });
 
