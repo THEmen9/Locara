@@ -35,6 +35,7 @@ const asyncWrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).
        Create a pending booking then redirect to /reserve page.
        Called via AJAX from show.ejs booking card.
 ═══════════════════════════════════════════════════════════════ */
+
 router.post("/listings/:id/book", isLoggedIn, asyncWrap(async (req, res) => {
 
   const listing = await Listing.findById(req.params.id);
@@ -116,6 +117,8 @@ router.post("/listings/:id/book", isLoggedIn, asyncWrap(async (req, res) => {
     totalPrice,
     status:        "pending",
     paymentStatus: "unpaid",
+
+    expiresAt: new Date(Date.now() + 15 * 60 * 1000)
   });
 
   await booking.save();
@@ -134,14 +137,28 @@ router.post("/listings/:id/book", isLoggedIn, asyncWrap(async (req, res) => {
        Show booking summary + Pay Now / Pay at Property choice.
        → views/bookings/reserve.ejs
 ═══════════════════════════════════════════════════════════════ */
+
 router.get("/bookings/:id/reserve", isLoggedIn, asyncWrap(async (req, res) => {
 
   const booking = await Booking.findById(req.params.id)
     .populate("listing")
     .populate("user");
 
+   
   if (!booking) {
     req.flash("error", "Booking not found.");
+    return res.redirect("/listings");
+  }
+
+    if (
+    booking.status === "pending" &&
+    booking.expiresAt &&
+    booking.expiresAt < new Date()
+  ) {
+    booking.status = "cancelled";
+    await booking.save();
+
+    req.flash("error", "This booking session has expired.");
     return res.redirect("/listings");
   }
 

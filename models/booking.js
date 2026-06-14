@@ -74,9 +74,20 @@ totalPrice: {
   razorpayPaymentId: { type: String, default: null },
     
   expiresAt: {
-    type: Date
+    type: Date,
+    default: null
 }
 
 }, { timestamps: true });
+
+bookingSchema.index(
+  { expiresAt: 1 },
+  {
+    expireAfterSeconds: 0,
+    partialFilterExpression: {
+      status: "pending"
+    }
+  }
+);
 
 module.exports = mongoose.model("Booking", bookingSchema);
