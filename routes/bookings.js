@@ -308,7 +308,7 @@ router.post("/bookings/:id/verify-payment", isLoggedIn, asyncWrap(async (req, re
       });
     }
   }
-  
+
   // when booking type is room, check if there are any overlapping bookings of type whole. If so, return a 409 conflict response. Then check if the total number of rooms booked exceeds the total number of rooms available. If so, return a 409 conflict response.
   const listing = await Listing.findById(booking.listing);
 
@@ -391,6 +391,7 @@ router.get("/my-bookings", isLoggedIn, asyncWrap(async (req, res) => {
     .populate("listing")
     .sort({ createdAt: -1 });
 
+    console.log(bookings[0]?.listing);
   res.render("bookings/index", { bookings, currentUser: req.user });
 
 }));

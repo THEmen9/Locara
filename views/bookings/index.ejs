@@ -1,143 +1,161 @@
 
-<div class="bookings-container">
+<!-- ══════════════════════════════════════════════
+     BOOKING CARDS GRID
+     ════════════════════════════════════════════== -->
+<div class="stay-grid">
 
   <% bookings.forEach(booking => { %>
 
-    <div class=" booking-wrapper">
-      <div class="booking-card p-4">
+  <div class="stay-card">
 
-        <div class="booking-header">
-          <h5><%= booking.listing.title %></h5>
+    <!-- LEFT: Property Image -->
+    <div class="stay-card__photo">
+     <img
+      src="<%= booking.listing.images[0].url %>"
+      alt="<%= booking.listing.title %>">
+    </div>
 
-          <span class="status-pill <%= booking.status %>">
-            <%= booking.status %>
+    <!-- ░░ RIGHT: Content ░░ -->
+    <div class="stay-card__body">
+
+      <!-- Title + Status -->
+      <div class="stay-card__top">
+        <h5 class="stay-card__title"><%= booking.listing.title %></h5>
+        <span class="stay-status <%= booking.status %>">
+          <%= booking.status %>
+        </span>
+      </div>
+
+      <!-- Meta rows -->
+      <div class="stay-meta">
+
+        <div class="stay-meta__row">
+          <span class="stay-meta__label">Location</span>
+          <span class="stay-meta__value"><%= booking.listing.location || booking.listing.country || "—" %></span>
+        </div>
+
+        <div class="stay-meta__row">
+          <span class="stay-meta__label">Check-in</span>
+          <span class="stay-meta__value"><%= booking.checkIn.toDateString() %></span>
+        </div>
+
+        <div class="stay-meta__row">
+          <span class="stay-meta__label">Check-out</span>
+          <span class="stay-meta__value"><%= booking.checkOut.toDateString() %></span>
+        </div>
+
+        <div class="stay-meta__row">
+          <span class="stay-meta__label">Booking Type</span>
+          <span class="stay-meta__value">
+            <%= booking.bookingType === "room" ? "Rooms" : "Whole Property" %>
           </span>
         </div>
 
-        <div class="booking-meta">
-          <div>
-            <small>Check-in</small>
-            <strong><%= booking.checkIn.toDateString() %></strong>
-          </div>
+        <% if (booking.bookingType === "room") { %>
+        <div class="stay-meta__row">
+          <span class="stay-meta__label">Rooms Booked</span>
+          <span class="stay-meta__value"><%= booking.roomsBooked %></span>
+        </div>
+        <% } %>
 
-          <div>
-            <small>Check-out</small>
-            <strong><%= booking.checkOut.toDateString() %></strong>
-          </div>
-        <div>
-      <small>Booking Type</small>
-      <strong>
-        <%= booking.bookingType === "room" ? "Rooms" : "Whole Property" %>
-      </strong>
-    </div>
+      </div><!-- /.stay-meta -->
 
-    <% if(booking.bookingType === "room"){ %>
-      <div>
-        <small>Rooms</small>
-        <strong><%= booking.roomsBooked %></strong>
+      <!-- Divider -->
+      <hr class="stay-divider">
+
+      <!-- Price -->
+      <div class="stay-price">
+        <span class="stay-price__label">Total</span>
+        <span class="stay-price__amount">₹ <%= booking.totalPrice %></span>
       </div>
-    <% } %>
 
-          <div>
-            <small>Total</small>
-            <strong>₹ <%= booking.totalPrice %></strong>
-          </div>
-        </div>
+      <!-- Actions -->
+      <div class="stay-actions">
 
-        <div class="booking-actions">
-          <% if(booking.status === "confirmed"){ %>
-                <button class="cancel-btn" data-id="<%= booking._id %>">
-                    Cancel
-                </button>
-           <% } %>
+        <% if (booking.status === "confirmed") { %>
+          <button
+            class="stay-btn stay-btn--cancel cancel-btn"
+            data-id="<%= booking._id %>">
+            Cancel
+          </button>
+        <% } %>
 
-           <% if(booking.status === "cancelled"){ %>
-               <button class="delete-btn" data-id="<%= booking._id %>">
-                  Delete
-               </button>
-           <% } %>
-        </div>
+        <% if (booking.status === "cancelled") { %>
+          <button
+            class="stay-btn stay-btn--delete delete-btn"
+            data-id="<%= booking._id %>">
+            Delete
+          </button>
+        <% } %>
 
       </div>
-    </div>
+
+    </div><!-- /.stay-card__body -->
+
+  </div><!-- /.stay-card -->
 
   <% }) %>
 
-</div>
+</div><!-- /.stay-grid -->
+
+
+<!-- ══════════════════════════════════════════════
+     SCRIPTS — booking logic unchanged
+     ════════════════════════════════════════════== -->
 <script>
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function () {
 
+  /* ── Delete booking ── */
   document.querySelectorAll(".delete-btn").forEach(btn => {
-
-    btn.addEventListener("click", async function(){
+    btn.addEventListener("click", async function () {
 
       const id = this.dataset.id;
-
       const confirmDelete = confirm("Delete this booking permanently?");
       if (!confirmDelete) return;
 
       try {
-
         const response = await fetch(`/bookings/${id}`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" }
         });
-
         const result = await response.json();
 
-        if(result.success){
-          const card = this.closest(".booking-wrapper");
-          card.remove();
+        if (result.success) {
+          this.closest(".stay-card").remove();
         } else {
           alert("Delete failed");
         }
-
       } catch (err) {
         console.error("Delete error:", err);
       }
-
     });
-
   });
 
-});
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-
+  /* ── Cancel booking ── */
   document.querySelectorAll(".cancel-btn").forEach(btn => {
-
-    btn.addEventListener("click", async function(){
+    btn.addEventListener("click", async function () {
 
       const id = this.dataset.id;
-
       const confirmed = confirm("Cancel this booking?");
       if (!confirmed) return;
 
       try {
-
         const response = await fetch(`/bookings/${id}/cancel`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" }
         });
-
         const result = await response.json();
 
-        if(result.success){
-          location.reload();  // simple and safe for now
+        if (result.success) {
+          location.reload();
         } else {
           alert("Cancel failed");
         }
-
       } catch (err) {
         console.error(err);
       }
-
     });
-
   });
 
 });
 </script>
-

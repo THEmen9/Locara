@@ -1,0 +1,248 @@
+/* ──────────────────────────────────────────────
+   BOOKING GRID
+   ────────────────────────────────────────────── */
+.stay-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto 80px; /* 80px bottom keeps footer clear */
+  padding: 0 4px;      /* prevents edge clipping on mobile */
+}
+
+/* ──────────────────────────────────────────────
+   CARD SHELL
+   ────────────────────────────────────────────── */
+.stay-card {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;                       /* clips image corners cleanly  */
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 8px 24px rgba(0, 0, 0, 0.06);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  min-height: 0;                          /* prevents grid row stretching  */
+}
+
+.stay-card:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    0 16px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* ──────────────────────────────────────────────
+   LEFT — PROPERTY IMAGE
+   Fixed 120 × 100% column; image fills it fully.
+   ────────────────────────────────────────────── */
+.stay-card__photo {
+  flex: 0 0 120px;
+  position: relative;
+}
+
+.stay-card__photo img {
+  width: 120px;
+  height: 100%;        /* fills card height regardless of content  */
+  min-height: 200px;   /* floor so short cards look balanced        */
+  object-fit: cover;
+  display: block;
+}
+
+/* ──────────────────────────────────────────────
+   RIGHT — CONTENT COLUMN
+   ────────────────────────────────────────────── */
+.stay-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px 12px;
+  gap: 0;
+  min-width: 0;        /* prevents text overflow breaking layout     */
+}
+
+/* ──────────────────────────────────────────────
+   TOP ROW: title + status badge
+   ────────────────────────────────────────────── */
+.stay-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.stay-card__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.3;
+  margin: 0;
+  /* clamp to 2 lines; avoids card growing excessively */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ──────────────────────────────────────────────
+   STATUS BADGE
+   ────────────────────────────────────────────── */
+.stay-status {
+  flex-shrink: 0;
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.stay-status.confirmed {
+  background: rgba(16, 185, 129, 0.13);
+  color: #065f46;
+}
+
+.stay-status.pending {
+  background: rgba(245, 158, 11, 0.13);
+  color: #92400e;
+}
+
+.stay-status.cancelled {
+  background: rgba(239, 68, 68, 0.13);
+  color: #7f1d1d;
+}
+
+/* ──────────────────────────────────────────────
+   BOOKING META — stacked label/value pairs
+   ────────────────────────────────────────────── */
+.stay-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;             /* pushes divider + price + actions downward  */
+}
+
+.stay-meta__row {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.stay-meta__label {
+  font-size: 10px;
+  font-weight: 500;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1px;
+}
+
+.stay-meta__value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* ──────────────────────────────────────────────
+   DIVIDER before pricing
+   ────────────────────────────────────────────── */
+.stay-divider {
+  border: none;
+  border-top: 1px solid #f3f4f6;
+  margin: 10px 0 8px;
+}
+
+/* ──────────────────────────────────────────────
+   PRICE ROW
+   ────────────────────────────────────────────── */
+.stay-price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.stay-price__label {
+  font-size: 10px;
+  font-weight: 500;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stay-price__amount {
+  font-size: 15px;
+  font-weight: 800;
+  color: #111827;
+}
+
+/* ──────────────────────────────────────────────
+   ACTION BUTTONS — bottom-right
+   ────────────────────────────────────────────── */
+.stay-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.stay-btn {
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  line-height: 1.5;
+}
+
+/* Cancel — outlined danger */
+.stay-btn--cancel {
+  background: transparent;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.stay-btn--cancel:hover {
+  background: #fef2f2;
+  border-color: #dc2626;
+}
+
+/* Delete — filled danger */
+.stay-btn--delete {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+}
+
+.stay-btn--delete:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+/* ──────────────────────────────────────────────
+   RESPONSIVE BREAKPOINTS
+   ────────────────────────────────────────────── */
+
+/* Tablet: 2 cards per row */
+@media (max-width: 900px) {
+  .stay-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile: 1 card per row, taller image */
+@media (max-width: 560px) {
+  .stay-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stay-card__photo img {
+    min-height: 160px;
+  }
+}
