@@ -30,6 +30,39 @@
     </div>
   </div> -->
 
+    <% if (
+      currentUser &&
+      listing.owner &&
+      (
+        listing.owner._id.toString() === currentUser._id.toString() ||
+        currentUser.role === "dev"
+      )
+  ) { %>
+
+  <div class="listing-owner-actions mb-3">
+
+    <a
+      href="/listings/<%= listing._id %>/edit"
+      class="btn btn-primary">
+      Edit Listing
+    </a>
+
+    <form
+      action="/listings/<%= listing._id %>?_method=DELETE"
+      method="POST"
+      style="display:inline-block;">
+
+      <button
+        type="submit"
+        class="btn btn-danger">
+        Delete Listing
+      </button>
+
+    </form>
+
+  </div>
+
+<% } %>
   <!-- ── GALLERY ──────────────────────────────────────────────── -->
   <section class="locara-show__gallery" aria-label="Listing images">
     <% listing.images.slice(0, 5).forEach((img, i) => { %>
@@ -222,7 +255,7 @@
         <!-- NOT LOGGED IN -->
         <div class="booking-card__login-prompt">
           <p>Sign in to reserve this stay</p>
-          <a href="/login" class="booking-card__login-btn">Log in or sign up</a>
+          <a href="/login" class="booking-card__login-btn">LogIn or signUp</a>
         </div>
 
         <% } %>

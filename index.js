@@ -136,6 +136,7 @@ app.get("/listings", async (req,res)=>{
 
 
 // Database connection
+
 async function connectDB() {
     try {
         await mongoose.connect("mongodb://127.0.0.1:27017/staynest", {

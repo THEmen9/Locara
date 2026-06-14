@@ -17,6 +17,18 @@
 .locara-show__header {
   margin-bottom: 18px;
 }
+
+/* ── 3. Owner Actions ────────────────────────────────────────── */
+
+.listing-owner-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.listing-owner-actions .btn {
+  border-radius: 12px;
+}
  
 .locara-show__title {
   font-family: 'Sora', sans-serif;
@@ -291,6 +303,9 @@
  
 /* ── 7. Sidebar (Right Column) ───────────────────────────────── */
 .locara-show__sidebar {
+  position: sticky;
+  top: 90px;
+  align-self: start;
   min-width: 0;
   width: 100%;
   max-width: 420px;
@@ -299,7 +314,7 @@
  
 /* ── 8. Booking Card (Premium details) ───────────────────────── */
 .booking-card {
-  position: sticky;
+  position: relative;
   top: 100px;
   background: var(--ls-surface, #ffffff);
   border: 1px solid var(--ls-border, #e5e7eb);

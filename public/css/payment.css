@@ -1027,7 +1027,7 @@
 }
 
 /* ── 17. Dark mode ────────────────────────────────────────────── */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --lp-text:       #f5f5f4;
     --lp-text-muted: #a8a29e;
@@ -1045,4 +1045,4 @@
   .lp-success__summary { background: #232120; }
   .lp-pm-chip     { background: var(--lp-bg); }
   .lp-pay-card__method { background: #232120; }
-}
+} */

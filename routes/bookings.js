@@ -259,6 +259,7 @@ router.get("/bookings/:id/payment", isLoggedIn, asyncWrap(async (req, res) => {
        Body: { razorpay_order_id, razorpay_payment_id, razorpay_signature }
        CRITICAL: NEVER confirm booking before signature check.
 ═══════════════════════════════════════════════════════════════ */
+
 router.post("/bookings/:id/verify-payment", isLoggedIn, asyncWrap(async (req, res) => {
 
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
@@ -284,6 +285,52 @@ router.post("/bookings/:id/verify-payment", isLoggedIn, asyncWrap(async (req, re
       success: false,
       message: "No booking found for this payment.",
     });
+  }
+
+// overlap check
+  const overlapping = await Booking.find({
+    _id: { $ne: booking._id },
+
+    listing: booking.listing,
+
+    status: "confirmed",
+
+    checkIn: { $lt: booking.checkOut },
+    checkOut: { $gt: booking.checkIn }
+  });
+
+  // when booking type is whole, check if there are any overlapping bookings. If so, return a 409 conflict response.
+    if (booking.bookingType === "whole") {
+    if (overlapping.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: "Property is no longer available."
+      });
+    }
+  }
+  
+  // when booking type is room, check if there are any overlapping bookings of type whole. If so, return a 409 conflict response. Then check if the total number of rooms booked exceeds the total number of rooms available. If so, return a 409 conflict response.
+  const listing = await Listing.findById(booking.listing);
+
+  if (booking.bookingType === "room") {
+
+    if (overlapping.some(b => b.bookingType === "whole")) {
+      return res.status(409).json({
+        success: false,
+        message: "Property is fully booked."
+      });
+    }
+
+    const roomsTaken = overlapping
+      .filter(b => b.bookingType === "room")
+      .reduce((sum, b) => sum + (b.roomsBooked || 1), 0);
+
+    if (roomsTaken + booking.roomsBooked > listing.totalRooms) {
+      return res.status(409).json({
+        success: false,
+        message: "Rooms are no longer available."
+      });
+    }
   }
 
   /* ── 3. Idempotency guard + confirm ── */
@@ -388,6 +435,16 @@ router.delete("/bookings/:id", isLoggedIn, asyncWrap(async (req, res) => {
   if (!booking.user.equals(req.user._id)) {
     return res.json({ success: false, message: "Unauthorised" });
   }
+
+  if (
+    booking.status !== "pending" &&
+    booking.status !== "cancelled"
+  ) {
+    return res.json({
+      success: false,
+      message: "Only pending or cancelled bookings can be deleted"
+    });
+}
 
   await booking.deleteOne();
 

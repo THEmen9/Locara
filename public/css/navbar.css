@@ -278,6 +278,16 @@ body[data-page="show"] #mainNavbar {
   font-size: 0.8rem;
 }
 
+.navbar-center:empty {
+  display: none;
+}
+
+.guest-navbar {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;}
+
 /* ── Right: User pill & Dropdown ──────────────────────────── */
 
 .navbar-right {
@@ -285,6 +295,7 @@ body[data-page="show"] #mainNavbar {
   align-items: center;
   justify-content: flex-end;
   justify-self: end;
+  margin-left: auto
 
 }
 

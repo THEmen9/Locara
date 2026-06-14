@@ -1,6 +1,7 @@
 
 const express = require('express');
 const router = express.Router();
+const Booking = require("../models/booking");
 
 const Listing = require('../models/listing');
 const upload = require("../utils/multer");
@@ -10,6 +11,7 @@ const { isLoggedIn, isOwner } = require("../middleware");
 // const geocoder = mbxGeocoding({ accessToken: mapToken });
 
 router.get("/", async (req, res) => {
+
   try {
 
     const { search, location, guests, dates} = req.query;
@@ -34,16 +36,67 @@ router.get("/", async (req, res) => {
 
     }
 
-    const allListings = await Listing.find(query);
+    let allListings = await Listing.find(query).populate("owner");
+    let filteredListings = allListings;
+    let checkIn = null;
+    let checkOut = null;
 
-    res.render("listings/index", {
-    allListings,
-    filters: {
-      location,
-      guests,
-      dates
+    if (dates) {
+      const parts = dates.split(" to ");
+
+      if (parts.length === 2) {
+        const currentYear = new Date().getFullYear();
+
+      checkIn = new Date(`${parts[0]} ${currentYear}`);
+      checkOut = new Date(`${parts[1]} ${currentYear}`);
+      }
     }
-  });
+
+    if (checkIn && checkOut) {
+
+    const listingIds = allListings.map(l => l._id);
+
+    const overlappingBookings = await Booking.find({
+      listing: { $in: listingIds },
+
+      status: { $ne: "cancelled" },
+
+      checkIn: { $lt: checkOut },
+      checkOut: { $gt: checkIn }
+    });
+
+    filteredListings = allListings.filter(listing => {
+
+      const bookings = overlappingBookings.filter(
+        b => b.listing.toString() === listing._id.toString()
+      );
+
+      const hasWholeBooking = bookings.some(
+        b => b.bookingType === "whole"
+      );
+
+      if (hasWholeBooking) {
+        return false;
+      }
+
+      const bookedRooms = bookings
+        .filter(b => b.bookingType === "room")
+        .reduce((sum, b) => sum + b.roomsBooked, 0);
+
+      return bookedRooms < listing.totalRooms;
+    });
+
+  } 
+
+      res.render("listings/index", {
+      allListings: filteredListings,
+        filters: {
+        location,
+        guests,
+        dates
+      }
+      
+    });
 
   } catch (err) {
     console.error("Search error:", err);
@@ -52,6 +105,7 @@ router.get("/", async (req, res) => {
 });
 
 // New listing form
+
 router.get("/new",isLoggedIn, async (req, res) => {
     try {
         res.render("listings/new.ejs");
@@ -162,30 +216,41 @@ router.get("/api/search", async (req, res) => {
 });
 
 // Show single listing
-router.get("/:id",isLoggedIn, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const listing = await Listing.findById(id).populate("owner");
-        const reservedSuccess = req.query.reserved === "true";
-        const showReserve = req.query.reserve === "true";   
-        res.render("listings/show.ejs", { listing, reservedSuccess, showReserve });
-    } catch (err) {
-        console.log(err);
-        res.send("Error fetching listing");
-    }
-});
 
-// Edit form
-router.get("/:id/edit",isLoggedIn, isOwner, async (req, res) => {
+router.get("/:id", async (req, res) => {
+
     try {
-        const { id } = req.params;
-        const listing = await Listing.findById(id);
-        res.render("listings/edit.ejs", { listing });
+      const { id } = req.params;
+
+      const listing = await Listing.findById(id)
+        .populate("owner");
+
+      const reservedSuccess = req.query.reserved === "true";
+      const showReserve = req.query.reserve === "true";
+
+      res.render("listings/show.ejs", {
+        listing,
+        reservedSuccess,
+        showReserve
+      });
+
     } catch (err) {
-        console.log(err);
-        res.send("Error fetching listing");
+      console.log(err);
+      res.send("Error fetching listing");
     }
-});
+  });
+
+  // Edit form
+  router.get("/:id/edit",isLoggedIn, isOwner, async (req, res) => {
+      try {
+          const { id } = req.params;
+          const listing = await Listing.findById(id);
+          res.render("listings/edit.ejs", { listing });
+      } catch (err) {
+          console.log(err);
+          res.send("Error fetching listing");
+      }
+  });
 
 router.put("/:id",isLoggedIn, isOwner, async (req, res) => {
     try {

@@ -18,6 +18,7 @@ module.exports.redirectIfLoggedIn = (req, res, next) => {
 };
 
 // Owner Authorization
+
 module.exports.isOwner = async (req, res, next) => {
    let { id } = req.params;
    let listing = await Listing.findById(id);

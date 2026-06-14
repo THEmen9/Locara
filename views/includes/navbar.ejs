@@ -5,7 +5,7 @@
 
     <%# ══ ROW 1: brand  |  tabs or compact pill  |  user ════════ %>
 
-    <div class="navbar-row-top">
+    <div class="navbar-row-top <%= !currentUser ? 'guest-navbar' : '' %>">
 
       <%# ── Left: brand ──────────────────────────────────────── %>
 
@@ -26,8 +26,9 @@
 
       <%# ── Center: tabs (unscrolled) ↔ compact pill (scrolled) ── %>
 
-      <% if (currentUser) { %>
       <div class="navbar-center" id="navbarCenter">
+              <% if (currentUser) { %>
+
 
         <%# State 1 — Category tabs: visible at top of page %>
         <div class="nav-tabs-group" id="navTabsGroup" role="tablist">
@@ -145,10 +146,10 @@
           </div>
 
         </div>
-
+  <% } %>
       </div><%# /navbar-center %>
 
-      <% } %>
+    
 
       <%# ── Right: user pill or guest buttons ─────────────────── %>
       <div class="navbar-right">
