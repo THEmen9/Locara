@@ -111,7 +111,7 @@ router.get("/new",isLoggedIn, async (req, res) => {
         res.render("listings/new.ejs");
     } catch (err) {
         console.log(err);
-        res.send("Error loading new listing form");
+    res.send("Error loading new listing form");
     }
 });
 
@@ -122,6 +122,7 @@ router.post("/",isLoggedIn, upload.fields([
 ])
 , async (req, res) => {
     try {
+        console.log(req.body);
         const listingData = req.body.listing;
 
       /* ===== CREATE LISTING FIRST ===== */
@@ -145,24 +146,27 @@ router.post("/",isLoggedIn, upload.fields([
         if(data && data.length){
         newListing.geometry = {
           type:"Point",
-          coordinates:[ data[0].lon, data[0].lat ]
+          coordinates:[
+          parseFloat(data[0].lon),
+          parseFloat(data[0].lat)
+        ]
         };
       }
 
          /* ===== IMAGES ===== */
-      const imageFiles = req.files["images"];
+      const imageFiles = req.files?.images || [];
 
       newListing.images = [];
 
       if(imageFiles && imageFiles.length){
         newListing.images = imageFiles.map(f => ({
-          url: "uploads/" + f.filename,
+          url: f.path,
           filename: f.filename
         }));
       }
 
       /* ===== OWNERSHIP PROOF ===== */
-      const proofFile = req.files["ownershipProof"];
+      const proofFile = req.files?.ownershipProof || [];
 
       if(proofFile && proofFile.length){
         newListing.ownershipProof = {
@@ -179,8 +183,10 @@ router.post("/",isLoggedIn, upload.fields([
       res.redirect("/listings");
 
     } catch(err){
-      console.log(err);
-      req.flash("error","Something went wrong");
+        console.error("CREATE LISTING ERROR:");
+        console.error(err);
+        console.error(err.stack);      
+        req.flash("error","Something went wrong");
       res.redirect("/listings/new");
     }
 

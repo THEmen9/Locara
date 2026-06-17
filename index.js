@@ -1,6 +1,6 @@
 require("dotenv").config();
-console.log("SMTP_USER:", process.env.SMTP_USER);
-console.log("SMTP_PASS:", process.env.SMTP_PASS);
+const dbUrl = process.env.MONGO_URL.replace("/?", "/locara?");
+console.log("Environment variables loaded");
 const express = require("express");
 const mongoose = require("mongoose");
 console.log("Mongoose runtime version:", mongoose.version);
@@ -25,7 +25,7 @@ const bookingRoutes = require("./routes/bookings");
 
 
 const app = express();
-const PORT = 5050;
+const PORT = process.env.PORT || 5050;
 
 // View engine setup
 app.set("view engine", "ejs");
@@ -42,17 +42,19 @@ app.use(methodOverride("_method"));
 
 // Session & flash middleware
 const store = MongoStore.create({
-  mongoUrl: "mongodb://127.0.0.1:27017/staynest",
-  crypto: { secret: "staynestsecret" }
+  mongoUrl: dbUrl,
+  crypto: {
+    secret: process.env.SESSION_SECRET || "staynestsecret"
+  }
 });
 
 app.use(session({
-  secret: "staynestsecret",
+  secret: process.env.SESSION_SECRET || "staynestsecret",
   resave: false,
   saveUninitialized: false,
   store,
   cookie: {
-    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    maxAge: 7 * 24 * 60 * 60 * 1000
   }
 }));
 
@@ -121,31 +123,35 @@ app.get("/", (req, res) => {
     res.send("StayNest running");
 });
 
-app.get("/listings", async (req,res)=>{
-   let { search } = req.query;
-   let filter = {};
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error("GLOBAL ERROR:");
+  console.error(err);
 
-   if(search){
-      filter.title = { $regex: search, $options: "i" };
-   }
-
-   let allListings = await Listing.find(filter);
-   res.render("listings/index",{allListings});
+  res.status(err.status || 500).send(
+    err.message || "Internal Server Error"
+  );
 });
-
-
 
 // Database connection
 
 async function connectDB() {
     try {
-        await mongoose.connect("mongodb://127.0.0.1:27017/staynest", {
+        const dbUrl = process.env.MONGO_URL.replace("/?", "/locara?");
+
+        console.log("Connecting to:", dbUrl.split("@")[1]);
+
+        await mongoose.connect(dbUrl, {
             serverSelectionTimeoutMS: 5000,
             socketTimeoutMS: 5000
         });
+
         console.log("MongoDB Connected");
+        console.log("Database:", mongoose.connection.name);
+
     } catch (err) {
         console.log("Database connection error:", err.message);
+        console.error(err);
     }
 }
 

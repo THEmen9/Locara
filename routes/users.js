@@ -42,20 +42,23 @@ router.post("/login", (req, res, next) => {
     if (!user) {
       return res.json({ success: false, message: info?.message || "Invalid credentials" });
     }
-
     req.logIn(user, (err) => {
       if (err) {
-        return res.json({ success: false, message: "Login failed" });
+        return res.json({
+          success: false,
+          message: "Login failed"
+        });
       }
 
-      return res.json({ success: true, message: "Logged In" });
+      return res.json({
+        success: true,
+        message: "Welcome back!"
+      });
     });
 
   })(req, res, next);
 
 });
-
-
 
 // LogOut User
 router.post("/logout", (req, res, next) => {

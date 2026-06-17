@@ -161,7 +161,9 @@ exports.verifyPayment = async (req, res) => {
     }
 
     /* ── 2. Find booking by Razorpay order ID ── */
-    const booking = await Booking.findOne({ razorpayOrderId: razorpay_order_id });
+    const booking = await Booking.findOne({
+      razorpayOrderId: razorpay_order_id
+    });
 
     if (!booking) {
       return res.status(404).json({
@@ -170,23 +172,43 @@ exports.verifyPayment = async (req, res) => {
       });
     }
 
-    /* ── 3. Confirm only if still pending (idempotency guard) ── */
-    if (booking.paymentStatus !== "paid") {
-      booking.status           = "confirmed";
-      booking.paymentStatus    = "paid";
-      booking.razorpayPaymentId = razorpay_payment_id;
-      await booking.save();
+    /* ── 2.5 Verify order amount ── */
+    
+    const order = await razorpay.orders.fetch(
+      razorpay_order_id
+    );
+
+    if (order.amount !== booking.totalPrice * 100) {
+      return res.status(400).json({
+        success: false,
+        message: "Amount mismatch"
+      });
     }
 
-    return res.json({ success: true });
-  } catch (err) {
-    console.error("[verifyPayment]", err);
-    return res.status(500).json({
-      success: false,
-      message: "Server error during verification. Please contact support.",
-    });
+    /* ── 3. Confirm only if still pending ── */
+   if (booking.paymentStatus !== "paid") {
+
+      booking.status = "confirmed";
+      booking.paymentStatus = "paid";
+
+      booking.razorpayPaymentId = razorpay_payment_id;
+      booking.razorpaySignature = razorpay_signature;
+
+      booking.paidAt = new Date();
+
+      await booking.save();
   }
-};
+
+    return res.json({ success: true });
+      
+    } catch (err) {
+      console.error("[verifyPayment]", err);
+      return res.status(500).json({
+        success: false,
+        message: "Server error during verification. Please contact support.",
+      });
+    }
+  };
 
 /* ─────────────────────────────────────────────────────────────
    GET /bookings/:id/success
