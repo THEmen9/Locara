@@ -1,6 +1,9 @@
 require("dotenv").config();
-const dbUrl = process.env.MONGO_URL.replace("/?", "/locara?");
-console.log("Environment variables loaded");
+
+if (!process.env.MONGO_URL) {
+  throw new Error("MONGO_URL environment variable is missing");
+}
+const dbUrl = process.env.MONGO_URL.replace("/?", "/locara?");console.log("Environment variables loaded");
 const express = require("express");
 const mongoose = require("mongoose");
 console.log("Mongoose runtime version:", mongoose.version);

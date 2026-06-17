@@ -20,7 +20,7 @@ const nodemailer = require("nodemailer");
 const router   = express.Router();
 
 // Replace with your actual User model path
-const User = require("../models/User");
+const User = require("../models/user");
 
 /* ─────────────────────────────────────────────────────────────
    EMAIL TRANSPORTER
