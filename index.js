@@ -123,7 +123,7 @@ app.use("/",bookingRoutes);
 
 
 app.get("/", (req, res) => {
-    res.send("StayNest running");
+  res.redirect("/listings");
 });
 
 // Global error handler
