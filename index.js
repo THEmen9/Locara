@@ -152,6 +152,15 @@ async function connectDB() {
         });
 
         console.log("MongoDB Connected");
+        // Log the database name and collections to verify connection
+
+        console.log("Database:", mongoose.connection.name);
+
+        const collections = await mongoose.connection.db.listCollections().toArray();
+        console.log(
+          "Collections:",
+          collections.map(c => c.name)
+        );
         console.log("Database:", mongoose.connection.name);
 
     } catch (err) {
