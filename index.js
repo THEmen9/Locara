@@ -3,7 +3,8 @@ require("dotenv").config();
 if (!process.env.MONGO_URL) {
   throw new Error("MONGO_URL environment variable is missing");
 }
-const dbUrl = process.env.MONGO_URL.replace("/?", "/locara?");console.log("Environment variables loaded");
+const dbUrl = process.env.MONGO_URL;
+console.log("Environment variables loaded");
 const express = require("express");
 const mongoose = require("mongoose");
 console.log("Mongoose runtime version:", mongoose.version);
@@ -121,9 +122,10 @@ app.use("/listings", listingRoutes);
 
 app.use("/",bookingRoutes);
 
+// Home route
 
 app.get("/", (req, res) => {
-  res.redirect("/listings");
+    res.redirect("/listings");
 });
 
 // Global error handler
@@ -140,7 +142,7 @@ app.use((err, req, res, next) => {
 
 async function connectDB() {
     try {
-        const dbUrl = process.env.MONGO_URL.replace("/?", "/locara?");
+        const dbUrl = process.env.MONGO_URL;
 
         console.log("Connecting to:", dbUrl.split("@")[1]);
 

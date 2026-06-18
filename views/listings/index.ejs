@@ -218,15 +218,13 @@
           <span class="mb-nav__label">Wishlists</span>
         </a>
       </li>
-      <% if (currentUser) { %>
-        <li class="mb-nav__item">
-          <form action="/logout" method="POST" class="mb-nav__form">
-            <button type="submit" class="mb-nav__link mb-nav__button">
-              <i class="bi bi-box-arrow-right mb-nav__icon" aria-hidden="true"></i>
-              <span class="mb-nav__label">Log out</span>
-            </button>
-          </form>
-        </li>
+     <% if (currentUser) { %>
+      <li class="mb-nav__item">
+        <a href="/bookings" class="mb-nav__link">
+          <i class="bi bi-calendar-check mb-nav__icon" aria-hidden="true"></i>
+          <span class="mb-nav__label">Bookings</span>
+        </a>
+      </li>
       <% } else { %>
         <li class="mb-nav__item">
           <a href="/login" class="mb-nav__link">
