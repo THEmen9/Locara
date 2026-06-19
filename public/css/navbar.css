@@ -798,6 +798,12 @@ body[data-page="show"] #mainNavbar {
     display: none;
   }
 
+  /* Hide user dropdown on mobile — profile handled by bottom nav */
+  .user-dropdown {
+    display: none !important;
+  }
+  
+
   /* Clamp Panels to Viewport Width */
   .destination-panel,
   #whereSegment .destination-panel {

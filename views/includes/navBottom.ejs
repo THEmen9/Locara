@@ -1,0 +1,95 @@
+<!-- Mobile Bottom Nav — replaces desktop tabs on mobile, logged-in only -->
+<% if (currentUser) { %>
+<nav class="mobile-bottom-nav d-lg-none" aria-label="Mobile navigation">
+  <ul class="mb-nav">
+
+    <li class="mb-nav__item">
+      <a href="/listings"
+         class="mb-nav__link <%= currPath === '/listings' ? 'mb-nav__link--active' : '' %>"
+         aria-current="<%= currPath === '/listings' ? 'page' : 'false' %>">
+        <i class="bi bi-house-door mb-nav__icon" aria-hidden="true"></i>
+        <span class="mb-nav__label">Home</span>
+      </a>
+    </li>
+
+    <li class="mb-nav__item">
+      <a href="/listings/new"
+         class="mb-nav__link <%= currPath === '/listings/new' ? 'mb-nav__link--active' : '' %>"
+         aria-current="<%= currPath === '/listings/new' ? 'page' : 'false' %>">
+        <i class="bi bi-plus-circle mb-nav__icon" aria-hidden="true"></i>
+        <span class="mb-nav__label">Host Stay</span>
+      </a>
+    </li>
+
+    <li class="mb-nav__item">
+      <a href="/my-bookings"
+         class="mb-nav__link <%= currPath === '/my-bookings' ? 'mb-nav__link--active' : '' %>"
+         aria-current="<%= currPath === '/my-bookings' ? 'page' : 'false' %>">
+        <i class="bi bi-calendar-check mb-nav__icon" aria-hidden="true"></i>
+        <span class="mb-nav__label">My Bookings</span>
+      </a>
+    </li>
+
+    <li class="mb-nav__item">
+      <button class="mb-nav__link mb-nav__link--profile"
+              id="mobileProfileBtn"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-label="Profile menu">
+        <div class="mb-nav__avatar" aria-hidden="true">
+          <%= currentUser.username.charAt(0).toUpperCase() %>
+        </div>
+        <span class="mb-nav__label">Profile</span>
+      </button>
+
+      <!-- Profile popup anchored above bottom nav -->
+      <div class="mb-profile-popup" id="mobileProfilePopup" role="menu">
+        <div class="mb-profile-popup__header">
+          <div class="mb-profile-popup__name"><%= currentUser.username %></div>
+          <div class="mb-profile-popup__role">
+            <%= currentUser.role === 'dev' ? 'Developer' : 'Member' %>
+          </div>
+        </div>
+        <form method="POST" action="/logout">
+          <button type="submit" class="mb-profile-popup__logout" role="menuitem">
+            <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+            Logout
+          </button>
+        </form>
+      </div>
+    </li>
+
+  </ul>
+</nav>
+
+<script>
+(function () {
+  const profileBtn   = document.getElementById("mobileProfileBtn");
+  const profilePopup = document.getElementById("mobileProfilePopup");
+
+  if (!profileBtn || !profilePopup) return;
+
+  profileBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    const isOpen = profilePopup.classList.toggle("active");
+    profileBtn.setAttribute("aria-expanded", isOpen);
+  });
+
+  // Close popup when clicking outside
+  document.addEventListener("click", function (e) {
+    if (!profilePopup.contains(e.target) && e.target !== profileBtn) {
+      profilePopup.classList.remove("active");
+      profileBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  // Close on Escape
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      profilePopup.classList.remove("active");
+      profileBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+}());
+</script>
+<% } %>

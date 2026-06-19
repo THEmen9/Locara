@@ -203,42 +203,6 @@
   </div>
 
 
-  <!-- Mobile Bottom Nav (unchanged) -->
-  <nav class="mobile-bottom-nav d-lg-none" aria-label="Mobile navigation">
-    <ul class="mb-nav">
-      <li class="mb-nav__item">
-        <a href="/listings" class="mb-nav__link mb-nav__link--active" aria-current="page">
-          <i class="bi bi-search mb-nav__icon" aria-hidden="true"></i>
-          <span class="mb-nav__label">Explore</span>
-        </a>
-      </li>
-      <li class="mb-nav__item">
-        <a href="/wishlists" class="mb-nav__link">
-          <i class="bi bi-heart mb-nav__icon" aria-hidden="true"></i>
-          <span class="mb-nav__label">Wishlists</span>
-        </a>
-      </li>
-     <% if (currentUser) { %>
-      <li class="mb-nav__item">
-        <a href="/bookings" class="mb-nav__link">
-          <i class="bi bi-calendar-check mb-nav__icon" aria-hidden="true"></i>
-          <span class="mb-nav__label">Bookings</span>
-        </a>
-      </li>
-      <% } else { %>
-        <li class="mb-nav__item">
-          <a href="/login" class="mb-nav__link">
-            <i class="bi bi-person mb-nav__icon" aria-hidden="true"></i>
-            <span class="mb-nav__label">Log in</span>
-          </a>
-        </li>
-      <% } %>
-    </ul>
-  </nav>
-
-</div><!-- /.explore-page -->
-
-
 <script>
 (function () {
 
