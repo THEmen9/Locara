@@ -44,6 +44,10 @@ const googleRoutes = require("./routes/googleAuth");
 
 // ─── App Init ─────────────────────────────────────────────────────────────────
 const app  = express();
+
+// Tell Express to trust Render's proxy
+app.set("trust proxy", 1);
+
 const PORT = process.env.PORT || 5050;
 
 // ─── View Engine ──────────────────────────────────────────────────────────────
