@@ -70,20 +70,43 @@
 .auth-social-row { display: flex; justify-content: center; gap: 10px; margin: 16px 0; }
 
 .auth-social-btn {
-  width: 36px; height: 36px;
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   border-radius: 50%;
   border: 1px solid #ddd;
   background: var(--color-bg);
-  display: flex; align-items: center; justify-content: center;
+
+  text-decoration: none;
+  color: #444;
+  font-size: 12px;
+  font-weight: 700;
+
   cursor: pointer;
-  font-size: 12px; font-weight: 700; color: #444;
-  transition: border-color var(--t-base), box-shadow var(--t-base);
+  transition:
+    border-color var(--t-base),
+    box-shadow var(--t-base),
+    transform var(--t-base),
+    background var(--t-base),
+    color var(--t-base);
 }
+
 
 .auth-social-btn:hover {
   border-color: var(--color-indigo);
   box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
   color: var(--color-indigo);
+  transform: translateY(-2px);
+
+}
+
+.auth-social-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 128, 128, 0.15);
 }
 
 .auth-divider { font-size: 12px; color: #aaa; margin-bottom: 14px; letter-spacing: 0.03em; }

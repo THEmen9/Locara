@@ -12,12 +12,57 @@ const userSchema = new mongoose.Schema({
       required: true,
       unique: true
    },
-      
+   
+   // compete-profile-----
+
+   mobile: {
+   type: String,
+   default: ""
+   },
+
+   fullName: {
+      type: String,
+      default: ""
+   },
+
+   dob: {
+      type: Date
+   },
+
+   gender: {
+      type: String,
+      enum: ["Male", "Female", "Other"],
+      default: "Other"
+   },
+
    password: {
       type: String,
       required: true
    },
+      
+   // google auth----
    
+   googleId: {
+      type: String,
+      default: null
+   },
+
+   provider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local"
+   },
+
+   isProfileCompleted: {
+      type: Boolean,
+      default: true
+   },
+
+   avatar: {
+      type: String,
+      default: ""
+   },
+
    role: {
    type: String,
    enum: ["user", "dev"],

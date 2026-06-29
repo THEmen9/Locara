@@ -9,6 +9,8 @@ const REQUIRED_ENV = [
   "CLOUDINARY_CLOUD_NAME",
   "CLOUDINARY_API_KEY",
   "CLOUDINARY_API_SECRET",
+  "GOOGLE_CLIENT_ID",
+  "GOOGLE_CLIENT_SECRET",
 ];
 
 const missing = REQUIRED_ENV.filter((key) => !process.env[key]);
@@ -27,6 +29,10 @@ const MongoStore     = require("connect-mongo").default;
 const flash          = require("connect-flash");
 const passport       = require("passport");
 const LocalStrategy  = require("passport-local").Strategy;
+const configureGooglePassport = require("./config/passport-google");
+const profileComplete = require("./middleware/profileComplete");
+
+
 
 // ─── Route Imports ─────────────────────────────────────────────────────────────
 const listingRoutes  = require("./routes/listings");
@@ -34,6 +40,7 @@ const userRoutes     = require("./routes/users");
 const bookingRoutes  = require("./routes/bookings");
 const forgotRoutes   = require("./routes/forgotPassword");
 const User           = require("./models/user");
+const googleRoutes = require("./routes/googleAuth");
 
 // ─── App Init ─────────────────────────────────────────────────────────────────
 const app  = express();
@@ -89,8 +96,11 @@ app.use(
 app.use(flash());
 
 // ─── Passport ─────────────────────────────────────────────────────────────────
+
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(profileComplete);
 
 passport.use(
   new LocalStrategy(async (username, password, done) => {
@@ -107,6 +117,8 @@ passport.use(
     }
   })
 );
+
+configureGooglePassport(passport);
 
 passport.serializeUser((user, done) => done(null, user.id));
 
@@ -132,6 +144,7 @@ app.use((req, res, next) => {
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.use("/", forgotRoutes);
 app.use("/", userRoutes);
+app.use("/auth", googleRoutes);
 app.use("/listings", listingRoutes);
 app.use("/", bookingRoutes);
 

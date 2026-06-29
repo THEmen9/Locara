@@ -1,0 +1,193 @@
+
+<main class="complete-profile-page">
+  <div class="complete-card">
+
+    <!-- Avatar -->
+    <div class="complete-avatar-wrap">
+      <% if (currentUser.avatar) { %>
+        <img
+          src="<%= currentUser.avatar %>"
+          alt="Your Google avatar"
+          class="complete-avatar"
+          referrerpolicy="no-referrer">
+      <% } else { %>
+        <div class="complete-avatar-fallback" aria-hidden="true">
+          <%= (currentUser.username || currentUser.email || 'U').charAt(0).toUpperCase() %>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Heading -->
+    <div class="complete-heading">
+      <h1>Welcome to Locara 👋</h1>
+    </div>
+    <p class="complete-subtitle">Let's complete your profile to get started.</p>
+
+    <hr class="complete-divider">
+
+    <!-- Flash messages -->
+    <% if (typeof error !== 'undefined' && error && error.length) { %>
+      <div class="complete-alert complete-alert-danger" role="alert">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+          <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+        </svg>
+        <%= error[0] %>
+      </div>
+    <% } %>
+
+    <% if (typeof success !== 'undefined' && success && success.length) { %>
+      <div class="complete-alert complete-alert-success" role="alert">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+          <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+        </svg>
+        <%= success[0] %>
+      </div>
+    <% } %>
+
+    <!-- Form -->
+    <form action="/complete-profile" method="POST" id="completeProfileForm" novalidate>
+
+      <!-- Email (readonly) -->
+      <div class="complete-form-group">
+        <label class="complete-label" for="cp-email">Email</label>
+        <div class="complete-input-icon-wrap">
+          <input
+            id="cp-email"
+            type="email"
+            class="complete-input complete-input-locked"
+            value="<%= currentUser.email %>"
+            readonly
+            tabindex="-1"
+            aria-readonly="true"
+            aria-label="Email address — cannot be changed">
+          <span class="complete-lock-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- Full Name -->
+      <div class="complete-form-group">
+        <label class="complete-label" for="cp-fullName">Full Name</label>
+        <input
+          id="cp-fullName"
+          type="text"
+          name="fullName"
+          class="complete-input"
+          placeholder="Your full name"
+          value="<%= currentUser.fullName || '' %>"
+          autocomplete="name"
+          required>
+      </div>
+
+      <!-- Username -->
+      <div class="complete-form-group">
+        <label class="complete-label" for="cp-username">Username</label>
+        <input
+          id="cp-username"
+          type="text"
+          name="username"
+          class="complete-input"
+          placeholder="Choose a username"
+          value="<%= currentUser.username || '' %>"
+          autocomplete="username"
+          required>
+      </div>
+
+      <!-- Mobile -->
+      <div class="complete-form-group">
+        <label class="complete-label" for="cp-mobile">Mobile Number</label>
+        <input
+          id="cp-mobile"
+          type="tel"
+          name="mobile"
+          class="complete-input"
+          placeholder="+91 98765 43210"
+          minlength="8"
+          maxlength="15"
+          pattern="[0-9+ ]{8,16}"
+          autocomplete="tel"
+          required>
+      </div>
+
+      <!-- DOB + Gender (same row) -->
+      <div class="complete-row-2">
+        <div class="complete-form-group">
+          <label class="complete-label" for="cp-dob">Date of Birth</label>
+          <input
+            id="cp-dob"
+            type="date"
+            name="dob"
+            class="complete-input"
+            aria-label="Date of birth">
+        </div>
+
+        <div class="complete-form-group">
+          <label class="complete-label" for="cp-gender">Gender</label>
+          <div class="complete-select-wrap">
+            <select
+              id="cp-gender"
+              name="gender"
+              class="complete-select"
+              aria-label="Gender">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other" selected>Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="complete-btn" id="completeBtn">
+        <span class="complete-spinner" aria-hidden="true"></span>
+        <span class="complete-btn-text">Complete Profile →</span>
+      </button>
+
+    </form>
+
+    <p class="complete-footer-note">Your information is private and secure.</p>
+
+  </div>
+</main>
+
+<script>
+  (function () {
+    var form = document.getElementById('completeProfileForm');
+    var btn  = document.getElementById('completeBtn');
+
+    // Loading state on submit
+    form.addEventListener('submit', function () {
+      btn.classList.add('is-loading');
+      btn.disabled = true;
+    });
+
+    // Live validation feedback
+    var inputs = form.querySelectorAll('.complete-input:not(.complete-input-locked), .complete-select');
+
+    inputs.forEach(function (el) {
+      el.addEventListener('blur', function () {
+        if (el.hasAttribute('required') || el.value.trim()) {
+          if (el.checkValidity()) {
+            el.classList.remove('is-invalid');
+            el.classList.add('is-valid');
+          } else {
+            el.classList.remove('is-valid');
+            el.classList.add('is-invalid');
+          }
+        }
+      });
+
+      el.addEventListener('input', function () {
+        if (el.classList.contains('is-invalid') && el.checkValidity()) {
+          el.classList.remove('is-invalid');
+          el.classList.add('is-valid');
+        }
+      });
+    });
+  })();
+</script>

@@ -70,6 +70,70 @@ router.post("/logout", (req, res, next) => {
   });
 });
 
+router.get("/complete-profile", (req, res) => {
 
+
+    if (!req.isAuthenticated()) {
+        req.flash("error", "Please login first.");
+        return res.redirect("/login");
+    }
+
+    res.render("users/complete-profile");
+
+});
+
+// complete-user-profile------
+
+router.post("/complete-profile", async (req, res) => {
+  try {
+
+
+    if (!req.isAuthenticated()) {
+      req.flash("error", "Please login first.");
+      return res.redirect("/login");
+    }
+
+    const { username, mobile, fullName, dob, gender } = req.body;
+
+    // validate phone number---
+
+    const phone = mobile.replace(/\s+/g, "");
+
+    if (!/^\+?[1-9]\d{7,14}$/.test(phone)) {
+        req.flash("error", "Please enter a valid international mobile number.");
+        return res.redirect("/complete-profile");
+    }
+
+    const existingUser = await User.findOne({username,_id: { $ne: req.user._id }, });
+
+    if (existingUser) {
+    req.flash("error", "Username already exists.");
+
+    return req.session.save(() => {
+        res.redirect("/complete-profile");
+    });
+}
+
+    await User.findByIdAndUpdate(req.user._id, {
+      username,
+      mobile,
+      fullName,
+      dob,
+      gender,
+      isProfileCompleted: true,
+    });
+
+    req.flash("success", "Profile completed successfully.");
+
+    return req.session.save(() => {
+      res.redirect("/listings");
+    });
+
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Unable to update profile.");
+    res.redirect("/complete-profile");
+  }
+});
 
 module.exports = router;

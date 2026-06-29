@@ -1,13 +1,13 @@
-<%# ═  NAVBAR  ═════ %>
+                            <!--   NAVBAR    -->
 
 <nav class="navbar no-transition" id="mainNavbar" role="navigation" aria-label="Main navigation">
     <div class="container-fluid">
 
-    <%# ══ ROW 1: brand  |  tabs or compact pill  |  user ════════ %>
+    <!--   ROW 1: brand  |  tabs or compact pill  |  user   -->
 
     <div class="navbar-row-top <%= !currentUser ? 'guest-navbar' : '' %>">
 
-      <%# ── Left: brand ──────────────────────────────────────── %>
+      <!--   Left: brand   -->
 
       <div class="navbar-left">
         <a class="brand-logo" href="/listings" aria-label="Locara home">
@@ -24,13 +24,12 @@
         </a>
       </div>
 
-      <%# ── Center: tabs (unscrolled) ↔ compact pill (scrolled) ── %>
+      <!--   Center: tabs (unscrolled) ↔ compact pill (scrolled)  -->
 
       <div class="navbar-center" id="navbarCenter">
               <% if (currentUser) { %>
 
-
-        <%# State 1 — Category tabs: visible at top of page %>
+        <!--  State 1 — Category tabs: visible at top of page  -->
         <div class="nav-tabs-group" id="navTabsGroup" role="tablist">
 
           <a href="/listings" role="tab"
@@ -56,7 +55,7 @@
 
         </div>
 
-        <%# — Compact pill: visible when scrolled %>
+        <!--  Compact pill: visible when scrolled -->
 
         <form class="nav-search-compact" id="navSearchCompact"
               action="/listings" method="GET" aria-label="Quick search">
@@ -66,7 +65,7 @@
             <i class="bi bi-geo-alt-fill"></i>
           </div>
 
-          <%# Where %>
+          <!--  Where  -->
           <div class="compact-seg" id="compactWhereSegment">
             <input
               type="text"
@@ -83,7 +82,7 @@
 
           <div class="compact-divider" aria-hidden="true"></div>
 
-          <%# When — FIX: renamed from datePicker to datePickerCompact (was duplicate ID) %>
+          <!--  When   -->
           <div class="compact-seg">
             <input
               type="text"
@@ -96,7 +95,7 @@
 
           <div class="compact-divider" aria-hidden="true"></div>
 
-          <%#------------------- Who------------- %>
+          <%#  Who %>
 
           <div class="compact-seg compact-seg-narrow" id="compactWhoSegment">
             <input
@@ -121,7 +120,7 @@
 
         </form>
 
-        <%# Compact destination panel %>
+        <!--  Compact destination panel  -->
         <div class="destination-panel compact-dest-panel" id="compactDestPanel"
              role="listbox" aria-label="Suggested destinations">
           <div class="dest-title">Suggested destinations</div>
@@ -147,11 +146,10 @@
 
         </div>
   <% } %>
-      </div><%# /navbar-center %>
+      </div>                            
 
-    
-
-      <%# ── Right: user pill or guest buttons ─────────────────── %>
+  
+      <!-- Right: user pill or guest buttons  -->
       <div class="navbar-right">
 
         <% if (currentUser) { %>
@@ -162,9 +160,25 @@
             <div class="pill-menu-icon" aria-hidden="true">
               <span></span><span></span><span></span>
             </div>
+
+            <!-- Avatar -->
+
             <div class="avatar-circle" aria-label="<%= currentUser.username %>">
-              <%= currentUser.username.charAt(0).toUpperCase() %>
+              <% if (currentUser.avatar) { %>
+
+                <img
+                  src="<%= currentUser.avatar %>"
+                  alt="<%= currentUser.username %>"
+                  class="avatar-img">
+
+              <% } else { %>
+
+                <%= currentUser.username.charAt(0).toUpperCase() %>
+
+              <% } %>
+
             </div>
+
             <% if (currentUser.role === 'dev') { %>
               <span class="dev-badge">DEV</span>
             <% } %>
