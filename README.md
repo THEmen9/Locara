@@ -282,7 +282,7 @@ Contributions, suggestions, and improvements are welcome.
 **Ankit Kumar**
 
 * GitHub: https://github.com/THEmen9
-* LinkedIn: *(Add your LinkedIn profile URL)*
+* LinkedIn: https://www.linkedin.com/in/mr-ankit-64ab35290/?skipRedirect=true
 
 ---
 
