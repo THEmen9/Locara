@@ -218,7 +218,7 @@ http://localhost:5050
 ## 📸 Screenshots
 
 * Home Page
-![Home Page](screenshots/home.png)
+![Home Page](screenshots/Home.png)
 
 * Property Listings
 ![Property Listings](screenshots/Listings.png)
