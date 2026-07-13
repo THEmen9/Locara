@@ -270,6 +270,7 @@ router.post("/bookings/:id/choose-payment", isLoggedIn, asyncWrap(async (req, re
 
 
 /* ═══════ 4.  GET /bookings/:id/payment ══════ */
+
 router.get("/bookings/:id/payment", isLoggedIn, asyncWrap(async (req, res) => {
 
   const booking = await Booking.findById(req.params.id)
@@ -305,17 +306,14 @@ router.get("/bookings/:id/payment", isLoggedIn, asyncWrap(async (req, res) => {
 }));
 
 
-/* ═══════════════════════════════════════════════════════════════
-   5.  POST /bookings/:id/verify-payment          (JSON endpoint)
-       Body: { razorpay_order_id, razorpay_payment_id, razorpay_signature }
-       CRITICAL: NEVER confirm booking before signature check.
-═══════════════════════════════════════════════════════════════ */
+/* ═══════  5.  POST /bookings/:id/verify-payment ═══════ */
 
 router.post("/bookings/:id/verify-payment", isLoggedIn, asyncWrap(async (req, res) => {
 
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
   /* ── 1. HMAC-SHA256 signature verification ── */
+
   const expectedSig = crypto
     .createHmac("sha256", process.env.RAZORPAY_SECRET)
     .update(`${razorpay_order_id}|${razorpay_payment_id}`)
@@ -329,12 +327,20 @@ router.post("/bookings/:id/verify-payment", isLoggedIn, asyncWrap(async (req, re
   }
 
   /* ── 2. Find booking by Razorpay order ID ── */
+
   const booking = await Booking.findOne({ razorpayOrderId: razorpay_order_id });
 
   if (!booking) {
     return res.status(404).json({
       success: false,
       message: "No booking found for this payment.",
+    });
+  }
+
+  if (!booking._id.equals(req.params.id) || !booking.user.equals(req.user._id)) {
+    return res.status(403).json({
+      success: false,
+      message: "Unauthorised payment verification request.",
     });
   }
 
@@ -351,6 +357,7 @@ router.post("/bookings/:id/verify-payment", isLoggedIn, asyncWrap(async (req, re
   });
 
   // when booking type is whole, check if there are any overlapping bookings. If so, return a 409 conflict response.
+
     if (booking.bookingType === "whole") {
     if (overlapping.length > 0) {
       return res.status(409).json({
@@ -397,11 +404,7 @@ router.post("/bookings/:id/verify-payment", isLoggedIn, asyncWrap(async (req, re
 }));
 
 
-/* ═══════════════════════════════════════════════════════════════
-   6.  GET /bookings/:id/success
-       Booking confirmation page (paid OR pay-at-property).
-       → views/bookings/success.ejs
-═══════════════════════════════════════════════════════════════ */
+/* ═════ 6.  GET /bookings/:id/success ══════ */
 router.get("/bookings/:id/success", isLoggedIn, asyncWrap(async (req, res) => {
 
   const booking = await Booking.findById(req.params.id)
@@ -431,11 +434,7 @@ router.get("/bookings/:id/success", isLoggedIn, asyncWrap(async (req, res) => {
 }));
 
 
-/* ═══════════════════════════════════════════════════════════════
-   7.  GET /my-bookings
-       Current user's booking history.
-       → views/bookings/index.ejs
-═══════════════════════════════════════════════════════════════ */
+/* ════  7.  GET /my-bookings Current user's booking history.════ */
 router.get("/my-bookings", isLoggedIn, asyncWrap(async (req, res) => {
 
   const bookings = await Booking.find({ user: req.user._id })
@@ -448,10 +447,7 @@ router.get("/my-bookings", isLoggedIn, asyncWrap(async (req, res) => {
 }));
 
 
-/* ═══════════════════════════════════════════════════════════════
-   8.  PATCH /bookings/:id/cancel
-       Soft cancel — keeps the document, marks status = "cancelled".
-═══════════════════════════════════════════════════════════════ */
+/* ═════ 8.  PATCH /bookings/:id/cancel ═════ */
 router.patch("/bookings/:id/cancel", isLoggedIn, asyncWrap(async (req, res) => {
 
   const booking = await Booking.findById(req.params.id);
@@ -472,10 +468,7 @@ router.patch("/bookings/:id/cancel", isLoggedIn, asyncWrap(async (req, res) => {
 }));
 
 
-/* ═══════════════════════════════════════════════════════════════
-   9.  DELETE /bookings/:id
-       Hard delete — only for pending / cancelled bookings.
-═══════════════════════════════════════════════════════════════ */
+/* ════  9.  DELETE /bookings/:id ══════ */
 router.delete("/bookings/:id", isLoggedIn, asyncWrap(async (req, res) => {
 
   const booking = await Booking.findById(req.params.id);
@@ -505,9 +498,7 @@ router.delete("/bookings/:id", isLoggedIn, asyncWrap(async (req, res) => {
 }));
 
 
-/* ═══════════════════════════════════════════════════════════════
-   GLOBAL ERROR HANDLER for this router
-═══════════════════════════════════════════════════════════════ */
+/* ══════ GLOBAL ERROR HANDLER for this router ══════ */
 router.use((err, req, res, next) => {
   console.error("[booking.js]", err);
   /* JSON routes */
