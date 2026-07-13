@@ -264,7 +264,12 @@ router.get("/:id/edit", isLoggedIn, isOwner, async (req, res) => {
 router.put("/:id", isLoggedIn, isOwner, async (req, res) => {
   try {
     const { id } = req.params;
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+    const { title, description, price, totalRooms, maxGuests, location, country, category } = req.body.listing;
+    await Listing.findByIdAndUpdate(
+      id,
+      { title, description, price, totalRooms, maxGuests, location, country, category },
+      { runValidators: true }
+    );
     res.redirect(`/listings/${id}`);
   } catch (err) {
     console.log(err);
