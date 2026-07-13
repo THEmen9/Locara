@@ -137,7 +137,7 @@
         data-verified="<%= listing.isVerifiedOwner ? 'true' : 'false' %>"
         data-photos="<%= (listing.images && listing.images.length > 1) ? 'true' : 'false' %>"
         data-price="<%= listing.price || 0 %>"
-        data-rooms="<%= listing.rooms || listing.bedrooms || 0 %>"
+        data-rooms="<%= listing.totalRooms || 0 %>"
         data-guests="<%= listing.guests || listing.maxGuests || 0 %>"
         data-country="<%= (listing.country || '').toLowerCase() %>"
         data-category="<%= (listing.category || '').toLowerCase() %>"
