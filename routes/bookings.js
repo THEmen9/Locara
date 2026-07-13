@@ -177,12 +177,8 @@ router.get("/bookings/:id/reserve", isLoggedIn, asyncWrap(async (req, res) => {
 }));
 
 
-/* ═══════════════════════════════════════════════════════════════
-   3.  POST /bookings/:id/choose-payment
-       Body (form): paymentMethod = "online" | "property"
-       • "online"   → create Razorpay order → redirect to /payment
-       • "property" → confirm immediately    → redirect to /success
-═══════════════════════════════════════════════════════════════ */
+/* ═══  3.  POST /bookings/:id/choose-payment ═══ */
+
 router.post("/bookings/:id/choose-payment", isLoggedIn, asyncWrap(async (req, res) => {
 
   const booking = await Booking.findById(req.params.id).populate("listing");
@@ -201,6 +197,48 @@ router.post("/bookings/:id/choose-payment", isLoggedIn, asyncWrap(async (req, re
 
   /* ── Pay at property ── */
   if (paymentMethod === "property") {
+    if (booking.status !== "pending" || (booking.expiresAt && booking.expiresAt < new Date())) {
+      if (booking.status === "pending") {
+        booking.status = "cancelled";
+        await booking.save();
+      }
+
+      req.flash("error", "This booking session has expired. Please start again.");
+      return res.redirect("/listings");
+    }
+
+    if (!booking.listing) {
+      req.flash("error", "This listing is no longer available.");
+      return res.redirect("/listings");
+    }
+
+    // Availability can change while a booking is pending, so check again
+
+    const overlapping = await Booking.find({
+      _id: { $ne: booking._id },
+      listing: booking.listing._id,
+      status: "confirmed",
+      checkIn: { $lt: booking.checkOut },
+      checkOut: { $gt: booking.checkIn },
+    });
+
+    if (booking.bookingType === "whole" && overlapping.length > 0) {
+      req.flash("error", "This property is no longer available for those dates.");
+      return res.redirect("/listings");
+    }
+
+    if (booking.bookingType === "room") {
+      const hasWholeBooking = overlapping.some(item => item.bookingType === "whole");
+      const roomsTaken = overlapping
+        .filter(item => item.bookingType === "room")
+        .reduce((sum, item) => sum + (item.roomsBooked || 1), 0);
+
+      if (hasWholeBooking || roomsTaken + booking.roomsBooked > booking.listing.totalRooms) {
+        req.flash("error", "The selected rooms are no longer available for those dates.");
+        return res.redirect("/listings");
+      }
+    }
+
     booking.status        = "confirmed";
     booking.paymentStatus = "pending";   /* pending = due at check-in */
     await booking.save();
@@ -231,11 +269,7 @@ router.post("/bookings/:id/choose-payment", isLoggedIn, asyncWrap(async (req, re
 }));
 
 
-/* ═══════════════════════════════════════════════════════════════
-   4.  GET /bookings/:id/payment
-       Premium Razorpay payment UI.
-       → views/bookings/payment.ejs
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ 4.  GET /bookings/:id/payment ══════ */
 router.get("/bookings/:id/payment", isLoggedIn, asyncWrap(async (req, res) => {
 
   const booking = await Booking.findById(req.params.id)
