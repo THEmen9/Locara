@@ -59,7 +59,9 @@ router.get("/", async (req, res) => {
     const overlappingBookings = await Booking.find({
       listing: { $in: listingIds },
 
-      status: { $ne: "cancelled" },
+      // Pending bookings are payment sessions, not reservations. Only a
+      // confirmed booking should make a stay unavailable in search results.
+      status: "confirmed",
 
       checkIn: { $lt: checkOut },
       checkOut: { $gt: checkIn }

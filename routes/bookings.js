@@ -8,9 +8,8 @@ const Booking  = require("../models/booking");
 const Listing  = require("../models/listing");
 const { isLoggedIn } = require("../middleware");
 
-/* ═══════════════════════════════════════════════════════════════
-   RAZORPAY INSTANCE  (lazy — graceful when keys are missing)
-═══════════════════════════════════════════════════════════════ */
+/* ══════ RAZORPAY INSTANCE  (lazy — graceful when keys are missing) ════════ */ 
+
 const Razorpay = require("razorpay");
 
 let razorpay = null;
@@ -510,6 +509,7 @@ router.delete("/bookings/:id", isLoggedIn, asyncWrap(async (req, res) => {
 
 
 /* ══════ GLOBAL ERROR HANDLER for this router ══════ */
+
 router.use((err, req, res, next) => {
   console.error("[booking.js]", err);
   /* JSON routes */
