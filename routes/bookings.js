@@ -61,6 +61,21 @@ router.post("/listings/:id/book", isLoggedIn, asyncWrap(async (req, res) => {
     return res.json({ success: false, message: "Check-out must be after check-in" });
   }
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (newCheckIn < today) {
+    return res.json({ success: false, message: "Check-in cannot be in the past" });
+  }
+
+  const requestedGuests = Number(guests);
+  if (!Number.isInteger(requestedGuests) || requestedGuests < 1 || requestedGuests > listing.maxGuests) {
+    return res.json({
+      success: false,
+      message: `This stay allows between 1 and ${listing.maxGuests} guests`,
+    });
+  }
+
   /* ── Overlap check ── */
   const overlapping = await Booking.find({
     listing: req.params.id,
@@ -110,7 +125,7 @@ router.post("/listings/:id/book", isLoggedIn, asyncWrap(async (req, res) => {
     user:          req.user._id,
     checkIn:       newCheckIn,
     checkOut:      newCheckOut,
-    guests:        Number(guests) || 1,
+    guests:        requestedGuests,
     bookingType:   bookingType || "whole",
     roomsBooked:   selectedRooms,
     totalPrice,
@@ -287,7 +302,9 @@ router.get("/bookings/:id/payment", isLoggedIn, asyncWrap(async (req, res) => {
   }
 
   if (!booking.razorpayOrderId) {
+
     /* No order yet — send back to reserve */
+    
     return res.redirect(`/bookings/${booking._id}/reserve`);
   }
 
@@ -355,7 +372,6 @@ router.post("/bookings/:id/verify-payment", isLoggedIn, asyncWrap(async (req, re
     checkOut: { $gt: booking.checkIn }
   });
 
-  // when booking type is whole, check if there are any overlapping bookings. If so, return a 409 conflict response.
 
     if (booking.bookingType === "whole") {
     if (overlapping.length > 0) {
@@ -366,7 +382,7 @@ router.post("/bookings/:id/verify-payment", isLoggedIn, asyncWrap(async (req, re
     }
   }
 
-  // when booking type is room, check if there are any overlapping bookings of type whole. If so, return a 409 conflict response. Then check if the total number of rooms booked exceeds the total number of rooms available. If so, return a 409 conflict response.
+  
   const listing = await Listing.findById(booking.listing);
 
   if (booking.bookingType === "room") {
