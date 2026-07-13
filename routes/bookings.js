@@ -421,6 +421,16 @@ router.get("/bookings/:id/success", isLoggedIn, asyncWrap(async (req, res) => {
     return res.redirect("/listings");
   }
 
+  if (booking.status !== "confirmed") {
+    if (booking.status === "pending") {
+      req.flash("error", "Complete your payment before viewing the booking confirmation.");
+      return res.redirect(`/bookings/${booking._id}/reserve`);
+    }
+
+    req.flash("error", "This booking has been cancelled.");
+    return res.redirect("/listings");
+  }
+
   const payAtProperty =
     req.query.payAtProperty === "true" ||
     booking.paymentStatus === "pending";
@@ -469,6 +479,7 @@ router.patch("/bookings/:id/cancel", isLoggedIn, asyncWrap(async (req, res) => {
 
 
 /* ════  9.  DELETE /bookings/:id ══════ */
+
 router.delete("/bookings/:id", isLoggedIn, asyncWrap(async (req, res) => {
 
   const booking = await Booking.findById(req.params.id);
