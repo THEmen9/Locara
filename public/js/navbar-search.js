@@ -3,7 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const config = {
     mode: "range",
     minDate: "today",
-    dateFormat: "d M",
+    dateFormat: "Y-m-d",
+    altInput: true,
+    altFormat: "d M",
+    rangeSeparator: " to ",
     showMonths: 2
   };
 

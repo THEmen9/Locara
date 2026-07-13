@@ -45,10 +45,12 @@ router.get("/", async (req, res) => {
       const parts = dates.split(" to ");
 
       if (parts.length === 2) {
-        const currentYear = new Date().getFullYear();
+        const [start, end] = parts.map(value => new Date(`${value}T00:00:00`));
 
-      checkIn = new Date(`${parts[0]} ${currentYear}`);
-      checkOut = new Date(`${parts[1]} ${currentYear}`);
+        if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime()) && start < end) {
+          checkIn = start;
+          checkOut = end;
+        }
       }
     }
 
@@ -59,8 +61,7 @@ router.get("/", async (req, res) => {
     const overlappingBookings = await Booking.find({
       listing: { $in: listingIds },
 
-      // Pending bookings are payment sessions, not reservations. Only a
-      // confirmed booking should make a stay unavailable in search results.
+      // Pending bookings are payment sessions, not reservations. Only a confirmed booking should make a stay unavailable in search results.
       status: "confirmed",
 
       checkIn: { $lt: checkOut },
