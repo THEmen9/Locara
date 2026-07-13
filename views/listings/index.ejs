@@ -47,12 +47,8 @@
         <label class="filter-section__label" for="filterCategory">Category</label>
         <select class="filter-select" id="filterCategory">
           <option value="">All categories</option>
-          <option value="villa">Villa</option>
-          <option value="apartment">Apartment</option>
-          <option value="cottage">Cottage</option>
-          <option value="resort">Resort</option>
-          <option value="farmhouse">Farmhouse</option>
-          <option value="treehouse">Treehouse</option>
+          <option value="rent">Rental stay</option>
+          <option value="personal">Personal stay</option>
         </select>
       </div>
 
@@ -106,7 +102,7 @@
   </div>
 
   <!-- Empty state -->
-  <% if (!allListings || allListings.length === 0) { %>
+  <% if (!allListings || allListings.length===0) { %>
     <div class="explore-empty">
       <i class="bi bi-house-slash" style="font-size:3rem; opacity:.4;"></i>
       <h3>No stays found</h3>
@@ -115,216 +111,204 @@
         <a href="/listings/new" class="locara-btn locara-btn--primary">
           <i class="bi bi-plus-circle"></i> Host your Stay
         </a>
-      <% } %>
+        <% } %>
     </div>
-  <% } %>
+    <% } %>
 
-  <!-- ══ Listings Grid ══ -->
-  <div class="listings-grid" id="listingsGrid">
-    <% allListings.forEach((listing, index) => { %>
-      <%
-        const isOwner = currentUser &&
-          listing.owner &&
-          (listing.owner._id.toString() === currentUser._id.toString() ||
-           currentUser.role === "dev");
-      %>
+      <!-- ══ Listings Grid ══ -->
+      <div class="listings-grid" id="listingsGrid">
+        <% allListings.forEach((listing, index)=> { %>
+          <% const isOwner=currentUser && listing.owner && (listing.owner._id.toString()===currentUser._id.toString() ||
+            currentUser.role==="dev" ); %>
 
-      <a
-        href="/listings/<%= listing._id %>"
-        class="listing-card-link"
-        data-index="<%= index %>"
-        data-hidden="<%= index >= 8 ? 'true' : 'false' %>"
-        data-verified="<%= listing.verificationStatus === 'verified' ? 'true' : 'false' %>"
-        data-photos="<%= (listing.images && listing.images.length > 1) ? 'true' : 'false' %>"
-        data-price="<%= listing.price || 0 %>"
-        data-rooms="<%= listing.totalRooms || 0 %>"
-        data-guests="<%= listing.guests || listing.maxGuests || 0 %>"
-        data-country="<%= (listing.country || '').toLowerCase() %>"
-        data-category="<%= (listing.category || '').toLowerCase() %>"
-      >
-        <div class="listing-card">
+            <a href="/listings/<%= listing._id %>" class="listing-card-link" data-index="<%= index %>"
+              data-hidden="<%= index >= 8 ? 'true' : 'false' %>"
+              data-verified="<%= listing.verificationStatus === 'verified' ? 'true' : 'false' %>"
+              data-photos="<%= (listing.images && listing.images.length > 1) ? 'true' : 'false' %>"
+              data-price="<%= listing.price || 0 %>" data-rooms="<%= listing.totalRooms || 0 %>"
+              data-guests="<%= listing.guests || listing.maxGuests || 0 %>"
+              data-country="<%= (listing.country || '').toLowerCase() %>"
+              data-category="<%= (listing.category || '').toLowerCase() %>">
+              <div class="listing-card">
 
-          <!-- Image -->
-          <div class="card-img-wrap">
-            <img
-              src="<%= listing.images && listing.images.length ? listing.images[0].url : '/images/default.jpg' %>"
-              alt="<%= listing.title %>"
-              class="card-img"
-              loading="lazy"
-              onerror="this.onerror=null; this.src='/images/default.jpg';">
+                <!-- Image -->
+                <div class="card-img-wrap">
+                  <img
+                    src="<%= listing.images && listing.images.length ? listing.images[0].url : '/images/default.jpg' %>"
+                    alt="<%= listing.title %>" class="card-img" loading="lazy"
+                    onerror="this.onerror=null; this.src='/images/default.jpg';">
 
-            <!-- Wishlist heart -->
-            <button
-              class="card-wishlist-btn"
-              aria-label="Save to wishlist"
-              data-id="<%= listing._id %>"
-              onclick="event.preventDefault(); toggleWishlist(this)">
-              <i class="bi bi-heart"></i>
-            </button>
-          </div>
+                  <!-- Wishlist heart -->
+                  <button class="card-wishlist-btn" aria-label="Save to wishlist" data-id="<%= listing._id %>"
+                    onclick="event.preventDefault(); toggleWishlist(this)">
+                    <i class="bi bi-heart"></i>
+                  </button>
+                </div>
 
-          <!-- Body -->
-          <div class="card-body">
+                <!-- Body -->
+                <div class="card-body">
 
-            <h3 class="card-title"><%= listing.title %></h3>
+                  <h3 class="card-title">
+                    <%= listing.title %>
+                  </h3>
 
-            <div class="card-rating">
-              ⭐ 4.8
-              <span class="card-rating-count">(124)</span>
-            </div>
+                  <div class="card-rating">
+                    ⭐ 4.8
+                    <span class="card-rating-count">(124)</span>
+                  </div>
 
-            <% if (listing.location || listing.country) { %>
-              <p class="card-location">
-                <i class="bi bi-geo-alt"></i>
-                <%= [listing.location, listing.country].filter(Boolean).join(', ') %>
+                  <% if (listing.location || listing.country) { %>
+                    <p class="card-location">
+                      <i class="bi bi-geo-alt"></i>
+                      <%= [listing.location, listing.country].filter(Boolean).join(', ') %>
               </p>
             <% } %>
 
             <div class="card-price-row">
               <span class="card-price-amount">₹ <%= listing.price.toLocaleString('en-IN') %></span>
-              <span class="card-price-unit">/ night</span>
-            </div>
+                        <span class="card-price-unit">/ night</span>
+                </div>
 
-          </div>
-        </div>
+              </div>
+      </div>
       </a>
 
-    <% }) %>
-  </div>
+      <% }) %>
+</div>
 
-  <!-- Load More -->
-  <div class="load-more-wrap">
-    <% if (allListings.length > 8) { %>
-      <button class="load-more-btn" id="loadMoreBtn">
-        <i class="bi bi-arrow-down-circle"></i>
-        Show more stays
-      </button>
+<!-- Load More -->
+<div class="load-more-wrap">
+  <% if (allListings.length> 8) { %>
+    <button class="load-more-btn" id="loadMoreBtn">
+      <i class="bi bi-arrow-down-circle"></i>
+      Show more stays
+    </button>
     <% } %>
-  </div>
+</div>
 
 
 <script>
-(function () {
+  (function () {
 
-  /* ─── Quick filter chips ─── */
-  const chips = document.querySelectorAll('.filter-chip');
-  const grid  = document.getElementById('listingsGrid');
+    /* ─── Quick filter chips ─── */
+    const chips = document.querySelectorAll('.filter-chip');
+    const grid = document.getElementById('listingsGrid');
 
-  function getVisibleLinks() {
-    return Array.from(grid.querySelectorAll('.listing-card-link'));
-  }
+    function getVisibleLinks() {
+      return Array.from(grid.querySelectorAll('.listing-card-link'));
+    }
 
-  chips.forEach(chip => {
-    chip.addEventListener('click', function () {
-      chips.forEach(c => c.classList.remove('active'));
-      this.classList.add('active');
-      const f = this.dataset.filter;
-      getVisibleLinks().forEach(link => {
-        const show =
-          f === 'all' ? true :
-          f === 'verified' ? link.dataset.verified === 'true' :
-          f === 'photos'   ? link.dataset.photos   === 'true' : true;
-        link.style.display = show ? '' : 'none';
+    chips.forEach(chip => {
+      chip.addEventListener('click', function () {
+        chips.forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        const f = this.dataset.filter;
+        getVisibleLinks().forEach(link => {
+          const show =
+            f === 'all' ? true :
+              f === 'verified' ? link.dataset.verified === 'true' :
+                f === 'photos' ? link.dataset.photos === 'true' : true;
+          link.style.display = show ? '' : 'none';
+        });
+        resetLoadMore();
       });
+    });
+
+    /* ─── Filter modal ─── */
+    const overlay = document.getElementById('filterOverlay');
+    const openBtn = document.getElementById('openFiltersBtn');
+    const closeBtn = document.getElementById('closeFiltersBtn');
+    const applyBtn = document.getElementById('applyFiltersBtn');
+    const clearBtn = document.getElementById('clearFiltersBtn');
+
+    openBtn.addEventListener('click', () => overlay.classList.add('open'));
+    closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+
+    applyBtn.addEventListener('click', () => {
+      const category = document.getElementById('filterCategory').value.toLowerCase();
+      const priceMin = parseFloat(document.getElementById('filterPriceMin').value) || 0;
+      const priceMax = parseFloat(document.getElementById('filterPriceMax').value) || Infinity;
+      const rooms = parseInt(document.getElementById('filterRooms').value) || 0;
+      const guests = parseInt(document.getElementById('filterGuests').value) || 0;
+      const country = document.getElementById('filterCountry').value.trim().toLowerCase();
+
+      getVisibleLinks().forEach(link => {
+        const matchCat = !category || link.dataset.category === category;
+        const price = parseFloat(link.dataset.price) || 0;
+        const matchPrice = price >= priceMin && price <= priceMax;
+        const matchRooms = !rooms || parseInt(link.dataset.rooms) >= rooms;
+        const matchGuests = !guests || parseInt(link.dataset.guests) >= guests;
+        const matchCountry = !country || link.dataset.country.includes(country);
+
+        const show = matchCat && matchPrice && matchRooms && matchGuests && matchCountry;
+        link.style.display = show ? '' : 'none';
+        link.dataset.hidden = show ? 'false' : 'true';
+      });
+
+      overlay.classList.remove('open');
       resetLoadMore();
     });
-  });
 
-  /* ─── Filter modal ─── */
-  const overlay      = document.getElementById('filterOverlay');
-  const openBtn      = document.getElementById('openFiltersBtn');
-  const closeBtn     = document.getElementById('closeFiltersBtn');
-  const applyBtn     = document.getElementById('applyFiltersBtn');
-  const clearBtn     = document.getElementById('clearFiltersBtn');
-
-  openBtn.addEventListener('click', () => overlay.classList.add('open'));
-  closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
-
-  applyBtn.addEventListener('click', () => {
-    const category = document.getElementById('filterCategory').value.toLowerCase();
-    const priceMin = parseFloat(document.getElementById('filterPriceMin').value) || 0;
-    const priceMax = parseFloat(document.getElementById('filterPriceMax').value) || Infinity;
-    const rooms    = parseInt(document.getElementById('filterRooms').value)    || 0;
-    const guests   = parseInt(document.getElementById('filterGuests').value)   || 0;
-    const country  = document.getElementById('filterCountry').value.trim().toLowerCase();
-
-    getVisibleLinks().forEach(link => {
-      const matchCat     = !category || link.dataset.category.includes(category);
-      const price        = parseFloat(link.dataset.price) || 0;
-      const matchPrice   = price >= priceMin && price <= priceMax;
-      const matchRooms   = !rooms   || parseInt(link.dataset.rooms)  >= rooms;
-      const matchGuests  = !guests  || parseInt(link.dataset.guests) >= guests;
-      const matchCountry = !country || link.dataset.country.includes(country);
-
-      const show = matchCat && matchPrice && matchRooms && matchGuests && matchCountry;
-      link.style.display = show ? '' : 'none';
-      link.dataset.hidden = show ? 'false' : 'true';
+    clearBtn.addEventListener('click', () => {
+      ['filterCategory', 'filterPriceMin', 'filterPriceMax',
+        'filterRooms', 'filterGuests', 'filterCountry']
+        .forEach(id => { document.getElementById(id).value = ''; });
     });
 
-    overlay.classList.remove('open');
-    resetLoadMore();
-  });
+    /* ─── Load More ─── */
+    const BATCH = 8;
+    let loaded = 8;
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
 
-  clearBtn.addEventListener('click', () => {
-    ['filterCategory','filterPriceMin','filterPriceMax',
-     'filterRooms','filterGuests','filterCountry']
-      .forEach(id => { document.getElementById(id).value = ''; });
-  });
-
-  /* ─── Load More ─── */
-  const BATCH = 8;
-  let loaded  = 8;
-  const loadMoreBtn = document.getElementById('loadMoreBtn');
-
-  function resetLoadMore() {
-    loaded = 8;
-    getVisibleLinks().forEach((link, i) => {
-      if (link.style.display === 'none') return;
-      const visible = Array.from(getVisibleLinks()).filter(l => l.style.display !== 'none');
-      // Already handled by filter; just sync button
-    });
-    syncLoadMoreBtn();
-  }
-
-  function syncLoadMoreBtn() {
-    if (!loadMoreBtn) return;
-    const all    = getVisibleLinks().filter(l => l.style.display !== 'none' || !l.style.display);
-    const hidden = all.filter(l => l.dataset.hidden === 'true');
-    loadMoreBtn.hidden = hidden.length === 0;
-  }
-
-  if (loadMoreBtn) {
-    loadMoreBtn.addEventListener('click', () => {
-      let shown = 0;
-      getVisibleLinks().forEach(link => {
-        if (shown >= BATCH) return;
-        if (link.dataset.hidden === 'true') {
-          link.dataset.hidden = 'false';
-          link.style.display  = '';
-          link.classList.remove('card-entering');
-          void link.offsetWidth; // force reflow for animation
-          link.classList.add('card-entering');
-          shown++;
-          loaded++;
-        }
+    function resetLoadMore() {
+      loaded = 8;
+      getVisibleLinks().forEach((link, i) => {
+        if (link.style.display === 'none') return;
+        const visible = Array.from(getVisibleLinks()).filter(l => l.style.display !== 'none');
+        // Already handled by filter; just sync button
       });
       syncLoadMoreBtn();
-    });
-  }
-
-  syncLoadMoreBtn();
-
-  /* ─── Wishlist toggle ─── */
-  window.toggleWishlist = function(btn) {
-    btn.classList.toggle('wishlisted');
-    const icon = btn.querySelector('i');
-    if (btn.classList.contains('wishlisted')) {
-      icon.classList.replace('bi-heart', 'bi-heart-fill');
-    } else {
-      icon.classList.replace('bi-heart-fill', 'bi-heart');
     }
-  };
 
-}());
+    function syncLoadMoreBtn() {
+      if (!loadMoreBtn) return;
+      const all = getVisibleLinks().filter(l => l.style.display !== 'none' || !l.style.display);
+      const hidden = all.filter(l => l.dataset.hidden === 'true');
+      loadMoreBtn.hidden = hidden.length === 0;
+    }
+
+    if (loadMoreBtn) {
+      loadMoreBtn.addEventListener('click', () => {
+        let shown = 0;
+        getVisibleLinks().forEach(link => {
+          if (shown >= BATCH) return;
+          if (link.dataset.hidden === 'true') {
+            link.dataset.hidden = 'false';
+            link.style.display = '';
+            link.classList.remove('card-entering');
+            void link.offsetWidth; // force reflow for animation
+            link.classList.add('card-entering');
+            shown++;
+            loaded++;
+          }
+        });
+        syncLoadMoreBtn();
+      });
+    }
+
+    syncLoadMoreBtn();
+
+    /* ─── Wishlist toggle ─── */
+    window.toggleWishlist = function (btn) {
+      btn.classList.toggle('wishlisted');
+      const icon = btn.querySelector('i');
+      if (btn.classList.contains('wishlisted')) {
+        icon.classList.replace('bi-heart', 'bi-heart-fill');
+      } else {
+        icon.classList.replace('bi-heart-fill', 'bi-heart');
+      }
+    };
+
+  }());
 </script>

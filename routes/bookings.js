@@ -1,14 +1,14 @@
 
 "use strict";
 
-const express  = require("express");
-const crypto   = require("crypto");
-const router   = express.Router();
-const Booking  = require("../models/booking");
-const Listing  = require("../models/listing");
+const express = require("express");
+const crypto = require("crypto");
+const router = express.Router();
+const Booking = require("../models/booking");
+const Listing = require("../models/listing");
 const { isLoggedIn } = require("../middleware");
 
-/* ══════ RAZORPAY INSTANCE  (lazy — graceful when keys are missing) ════════ */ 
+/* ══════ RAZORPAY INSTANCE  (lazy — graceful when keys are missing) ════════ */
 
 const Razorpay = require("razorpay");
 
@@ -16,7 +16,7 @@ let razorpay = null;
 
 if (process.env.RAZORPAY_KEY && process.env.RAZORPAY_SECRET) {
   razorpay = new Razorpay({
-    key_id:     process.env.RAZORPAY_KEY,
+    key_id: process.env.RAZORPAY_KEY,
     key_secret: process.env.RAZORPAY_SECRET,
   });
 } else {
@@ -48,7 +48,7 @@ router.post("/listings/:id/book", isLoggedIn, asyncWrap(async (req, res) => {
 
   const { checkIn, checkOut, guests, bookingType, roomsBooked } = req.body;
 
-  const newCheckIn  = new Date(checkIn);
+  const newCheckIn = new Date(checkIn);
   const newCheckOut = new Date(checkOut);
   newCheckIn.setHours(0, 0, 0, 0);
   newCheckOut.setHours(0, 0, 0, 0);
@@ -79,8 +79,8 @@ router.post("/listings/:id/book", isLoggedIn, asyncWrap(async (req, res) => {
   /* ── Overlap check ── */
   const overlapping = await Booking.find({
     listing: req.params.id,
-    status:  "confirmed",
-    checkIn:  { $lt: newCheckOut },
+    status: "confirmed",
+    checkIn: { $lt: newCheckOut },
     checkOut: { $gt: newCheckIn },
   });
 
@@ -121,15 +121,15 @@ router.post("/listings/:id/book", isLoggedIn, asyncWrap(async (req, res) => {
 
   /* ── Create pending booking ── */
   const booking = new Booking({
-    listing:       req.params.id,
-    user:          req.user._id,
-    checkIn:       newCheckIn,
-    checkOut:      newCheckOut,
-    guests:        requestedGuests,
-    bookingType:   bookingType || "whole",
-    roomsBooked:   selectedRooms,
+    listing: req.params.id,
+    user: req.user._id,
+    checkIn: newCheckIn,
+    checkOut: newCheckOut,
+    guests: requestedGuests,
+    bookingType: bookingType || "whole",
+    roomsBooked: selectedRooms,
     totalPrice,
-    status:        "pending",
+    status: "pending",
     paymentStatus: "unpaid",
 
     expiresAt: new Date(Date.now() + 15 * 60 * 1000)
@@ -139,7 +139,7 @@ router.post("/listings/:id/book", isLoggedIn, asyncWrap(async (req, res) => {
 
   /* AJAX response → show.ejs JS will redirect */
   return res.json({
-    success:  true,
+    success: true,
     redirect: `/bookings/${booking._id}/reserve`,
   });
 
@@ -158,13 +158,13 @@ router.get("/bookings/:id/reserve", isLoggedIn, asyncWrap(async (req, res) => {
     .populate("listing")
     .populate("user");
 
-   
+
   if (!booking) {
     req.flash("error", "Booking not found.");
     return res.redirect("/listings");
   }
 
-    if (
+  if (
     booking.status === "pending" &&
     booking.expiresAt &&
     booking.expiresAt < new Date()
@@ -253,7 +253,7 @@ router.post("/bookings/:id/choose-payment", isLoggedIn, asyncWrap(async (req, re
       }
     }
 
-    booking.status        = "confirmed";
+    booking.status = "confirmed";
     booking.paymentStatus = "pending";   /* pending = due at check-in */
     await booking.save();
     return res.redirect(`/bookings/${booking._id}/success?payAtProperty=true`);
@@ -266,12 +266,12 @@ router.post("/bookings/:id/choose-payment", isLoggedIn, asyncWrap(async (req, re
   }
 
   const order = await razorpay.orders.create({
-    amount:   booking.totalPrice * 100,     /* paise */
+    amount: booking.totalPrice * 100,     /* paise */
     currency: "INR",
-    receipt:  `locara_${booking._id}`,
+    receipt: `locara_${booking._id}`,
     notes: {
       bookingId: booking._id.toString(),
-      userId:    req.user._id.toString(),
+      userId: req.user._id.toString(),
     },
   });
 
@@ -304,7 +304,7 @@ router.get("/bookings/:id/payment", isLoggedIn, asyncWrap(async (req, res) => {
   if (!booking.razorpayOrderId) {
 
     /* No order yet — send back to reserve */
-    
+
     return res.redirect(`/bookings/${booking._id}/reserve`);
   }
 
@@ -314,8 +314,8 @@ router.get("/bookings/:id/payment", isLoggedIn, asyncWrap(async (req, res) => {
 
   res.render("bookings/payment", {
     booking,
-    currentUser:     req.user,
-    razorpayKeyId:   process.env.RAZORPAY_KEY,
+    currentUser: req.user,
+    razorpayKeyId: process.env.RAZORPAY_KEY,
     razorpayOrderId: booking.razorpayOrderId,
   });
 
@@ -360,7 +360,7 @@ router.post("/bookings/:id/verify-payment", isLoggedIn, asyncWrap(async (req, re
     });
   }
 
-// overlap check
+  // overlap check
   const overlapping = await Booking.find({
     _id: { $ne: booking._id },
 
@@ -373,7 +373,7 @@ router.post("/bookings/:id/verify-payment", isLoggedIn, asyncWrap(async (req, re
   });
 
 
-    if (booking.bookingType === "whole") {
+  if (booking.bookingType === "whole") {
     if (overlapping.length > 0) {
       return res.status(409).json({
         success: false,
@@ -382,7 +382,7 @@ router.post("/bookings/:id/verify-payment", isLoggedIn, asyncWrap(async (req, re
     }
   }
 
-  
+
   const listing = await Listing.findById(booking.listing);
 
   if (booking.bookingType === "room") {
@@ -408,8 +408,8 @@ router.post("/bookings/:id/verify-payment", isLoggedIn, asyncWrap(async (req, re
 
   /* ── 3. Idempotency guard + confirm ── */
   if (booking.paymentStatus !== "paid") {
-    booking.status            = "confirmed";
-    booking.paymentStatus     = "paid";
+    booking.status = "confirmed";
+    booking.paymentStatus = "paid";
     booking.razorpayPaymentId = razorpay_payment_id;
     await booking.save();
   }
@@ -466,7 +466,7 @@ router.get("/my-bookings", isLoggedIn, asyncWrap(async (req, res) => {
     .populate("listing")
     .sort({ createdAt: -1 });
 
-    console.log(bookings[0]?.listing);
+  console.log(bookings[0]?.listing);
   res.render("bookings/index", { bookings, currentUser: req.user });
 
 }));
@@ -515,7 +515,7 @@ router.delete("/bookings/:id", isLoggedIn, asyncWrap(async (req, res) => {
       success: false,
       message: "Only pending or cancelled bookings can be deleted"
     });
-}
+  }
 
   await booking.deleteOne();
 
