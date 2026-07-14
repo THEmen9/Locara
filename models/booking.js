@@ -3,32 +3,32 @@ const Schema = mongoose.Schema;
 
 const bookingSchema = new Schema({
 
-  listing: {
+listing: {
     type: Schema.Types.ObjectId,
     ref: "Listing",
     required: true,
     index: true
   },
 
-  user: {
+user: {
     type: Schema.Types.ObjectId,
     ref: "User",
     required: true
   },
 
-  checkIn: {
+checkIn: {
     type: Date,
     required: true,
     index: true
   },
 
-  checkOut: {
+checkOut: {
     type: Date,
     required: true,
     index: true
   },
 
-  guests: {
+guests: {
     type: Number,
     default: 1,
     min: 1
@@ -56,30 +56,48 @@ totalPrice: {
     type: Number,
     required: true,
     min: 0,
-  },
+},
 
-  status: {
+status: {
     type: String,
     enum: ["pending", "confirmed", "cancelled"],
     default: "pending"
   },
 
-  paymentStatus: {
+paymentStatus: {
   type: String,
-  enum: ["paid", "unpaid", "pending"],
+  enum: ["paid", "unpaid", "pending", "refunded"],
   default: "unpaid"
 },
 
-  razorpayOrderId:   { type: String, default: null },
-  razorpayPaymentId: { type: String, default: null },
-  razorpaySignature: { type: String, default: null },
+refundStatus: {
+  type: String,
+  enum: ["none", "pending", "processed", "failed"],
+  default: "none",
+},
+
+
+razorpayOrderId:{
+  type: String,
+  default: null
+},
+
+razorpayPaymentId: {
+  type: String,
+  default: null 
+},
+
+razorpaySignature: {
+  type: String,
+  default: null
+},
 
 paidAt: {
   type: Date,
   default: null
 },  
 
-  expiresAt: {
+expiresAt: {
     type: Date,
     default: null
 }

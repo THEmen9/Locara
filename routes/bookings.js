@@ -460,6 +460,7 @@ router.get("/bookings/:id/success", isLoggedIn, asyncWrap(async (req, res) => {
 
 
 /* ════  7.  GET /my-bookings Current user's booking history.════ */
+
 router.get("/my-bookings", isLoggedIn, asyncWrap(async (req, res) => {
 
   const bookings = await Booking.find({ user: req.user._id })
@@ -473,6 +474,7 @@ router.get("/my-bookings", isLoggedIn, asyncWrap(async (req, res) => {
 
 
 /* ═════ 8.  PATCH /bookings/:id/cancel ═════ */
+
 router.patch("/bookings/:id/cancel", isLoggedIn, asyncWrap(async (req, res) => {
 
   const booking = await Booking.findById(req.params.id);
@@ -482,13 +484,53 @@ router.patch("/bookings/:id/cancel", isLoggedIn, asyncWrap(async (req, res) => {
   }
 
   if (booking.status === "confirmed" && booking.paymentStatus === "paid") {
-    /* Refund handling would go here if needed */
-  }
 
-  booking.status = "cancelled";
-  await booking.save();
+    if (!razorpay) {
+      return res.json({
+        success: false,
+        message: "Refund service is unavailable."
+      });
+    }
 
-  return res.json({ success: true, message: "Booking cancelled" });
+    if (!booking.razorpayPaymentId) {
+      return res.json({
+        success: false,
+        message: "Original payment could not be found."
+      });
+    }
+
+    const refund = await razorpay.payments.refund(
+      booking.razorpayPaymentId,
+      {
+        amount: booking.totalPrice * 100,
+      }
+    );
+
+    if ( !refund || refund.status !== "processed") {
+        booking.refundStatus = "pending";
+        await booking.save();
+
+        return res.json({
+          success: false,
+          message: "Refund is pending admin review."
+      });
+    }
+
+      booking.status = "cancelled";
+      booking.paymentStatus = "refunded";
+      booking.refundStatus = "processed";
+
+      await booking.save();
+      return res.json({ success: true, message: "Booking cancelled" });
+    }
+
+    booking.status = "cancelled";
+    await booking.save();
+
+    return res.json({
+        success: true,
+        message: "Booking cancelled"
+    });
 
 }));
 
