@@ -1,55 +1,38 @@
-/**
- * FORGOT / RESET PASSWORD ROUTES
- * ─────────────────────────────────────────────────────────────
- * File: routes/forgotPassword.js  (or add to routes/auth.js)
- *
- * Dependencies to install:
- *   npm install nodemailer crypto
- *
- * Schema additions needed on your User model (see bottom of file).
- *
- * Mount in app.js:
- *   const forgotRoutes = require("./routes/forgotPassword");
- *   app.use("/", forgotRoutes);
- * ─────────────────────────────────────────────────────────────
- */
+// FORGOT / RESET PASSWORD ROUTES 
 
-const express  = require("express");
-const crypto   = require("crypto");
+const express = require("express");
+const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-const router   = express.Router();
+const router = express.Router();
 
-// Replace with your actual User model path
 const User = require("../models/user");
 
-/* ─────────────────────────────────────────────────────────────
-   EMAIL TRANSPORTER
-   Use your real SMTP credentials (Gmail, SendGrid, Mailgun etc.)
-   For development: use Ethereal (https://ethereal.email)
-   for free test accounts with inbox preview.
-───────────────────────────────────────────────────────────── */
-async function createTransporter(){
-  const testAccount = await nodemailer.createTestAccount();
+/*  EMAIL TRANSPORTER */
 
-  return nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    auth:{
-      user: testAccount.user,
-      pass: testAccount.pass
+  const requiredEnv = [
+    "SMTP_HOST",
+    "SMTP_PORT",
+    "SMTP_USER",
+    "SMTP_PASS",
+  ];
+
+  for (const key of requiredEnv) {
+    if (!process.env[key]) {
+      throw new Error(`Missing required environment variable: ${key}`);
     }
-  });
-}
+  }
 
-/* ─────────────────────────────────────────────────────────────
-   POST /forgot-password
-   Body: { email }
-   
-   1. Generate a secure random token
-   2. Store token + expiry on user (15 min window)
-   3. Send email with reset link
-   4. Always respond success (prevents email enumeration)
-───────────────────────────────────────────────────────────── */
+  const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      secure: Number(process.env.SMTP_PORT) === 465,
+      auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+  });
+
+/* POST /forgot-password */
 router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
@@ -74,18 +57,17 @@ router.post("/forgot-password", async (req, res) => {
       // Build reset URL
       const baseUrl   = process.env.BASE_URL || `http://localhost:${process.env.PORT || 5050}`;
       const resetLink = `${baseUrl}/reset-password/${token}`;
-      const transporter = await createTransporter();
       
       // Send email
       const info = await transporter.sendMail({
-        from: `"StayNest" <${process.env.SMTP_USER}>`,
+        from: `"Locara" <${process.env.SMTP_USER}>`,
         to: user.email,
-        subject: "Reset your StayNest password",
+        subject: "Reset your Locara password",
         html: `
           <div style="font-family: 'DM Sans', sans-serif; max-width: 520px; margin: 0 auto; padding: 40px 32px; background: #f6f5f7; border-radius: 16px;">
             <h1 style="font-size: 1.4rem; color: #1a1a2e; margin-bottom: 8px;">Reset your password</h1>
             <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6; margin-bottom: 28px;">
-              We received a request to reset the password for your StayNest account.
+              We received a request to reset the password for your Locara account.
               Click the button below to set a new password.
               This link expires in <strong>15 minutes</strong>.
             </p>
@@ -101,12 +83,11 @@ router.post("/forgot-password", async (req, res) => {
             </p>
             <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
             <p style="color: #cbd5e1; font-size: 0.75rem;">
-              © 2026 StayNest · Developed by Mr.A
+              © 2026 Locara · Developed by Mr.A
             </p>
           </div>
         `,
       });
-      console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
     }
     // Always return success
     res.json({ success: true });
@@ -118,10 +99,7 @@ router.post("/forgot-password", async (req, res) => {
   }
 });
 
-/* ─────────────────────────────────────────────────────────────
-   GET /reset-password/:token
-   Validates token and renders the reset form.
-───────────────────────────────────────────────────────────── */
+/*  GET /reset-password/:token */
 router.get("/reset-password/:token", async (req, res) => {
   try {
     const { token } = req.params;
@@ -150,11 +128,7 @@ router.get("/reset-password/:token", async (req, res) => {
   }
 });
 
-/* ─────────────────────────────────────────────────────────────
-   POST /reset-password
-   Body: { token, password, confirmPassword }
-   Updates the user's password and invalidates the token.
-───────────────────────────────────────────────────────────── */
+/*  POST /reset-password  */
 router.post("/reset-password", async (req, res) => {
   try {
     const { token, password, confirmPassword } = req.body;
@@ -209,34 +183,3 @@ router.post("/reset-password", async (req, res) => {
 });
 
 module.exports = router;
-
-/* ─────────────────────────────────────────────────────────────
-   USER MODEL ADDITIONS
-   Add these two fields to your Mongoose User schema:
-   
-   resetPasswordToken: {
-     type: String,
-     default: undefined,
-   },
-   resetPasswordExpiry: {
-     type: Date,
-     default: undefined,
-   },
-   
-   Example schema snippet:
-   
-   const userSchema = new mongoose.Schema({
-     username: String,
-     email:    String,
-     // ... existing fields ...
-     resetPasswordToken:  { type: String },
-     resetPasswordExpiry: { type: Date },
-   });
-   
-   ENVIRONMENT VARIABLES (.env):
-   SMTP_HOST=smtp.gmail.com
-   SMTP_PORT=587
-   SMTP_USER=your@gmail.com
-   SMTP_PASS=your_app_password   ← Gmail: Settings → Security → App Passwords
-   BASE_URL=http://localhost:3000
-───────────────────────────────────────────────────────────── */
