@@ -38,7 +38,9 @@ const profileComplete = require("./middleware/profileComplete");
 const listingRoutes  = require("./routes/listings");
 const userRoutes     = require("./routes/users");
 const bookingRoutes  = require("./routes/bookings");
+console.log("Loading forgot password routes...");
 const forgotRoutes   = require("./routes/forgotPassword");
+console.log("Forgot password routes loaded.");
 const User           = require("./models/user");
 const googleRoutes = require("./routes/googleAuth");
 
