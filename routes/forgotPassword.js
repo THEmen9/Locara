@@ -2,36 +2,18 @@
 
 const express = require("express");
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 const router = express.Router();
 
 const User = require("../models/user");
 
-/*  EMAIL TRANSPORTER */
+/*  RESEND TRANSPORTER */
 
-  const requiredEnv = [
-    "SMTP_HOST",
-    "SMTP_PORT",
-    "SMTP_USER",
-    "SMTP_PASS",
-  ];
-
-  for (const key of requiredEnv) {
-    if (!process.env[key]) {
-      throw new Error(`Missing required environment variable: ${key}`);
-    }
+ if (!process.env.RESEND_API_KEY) {
+    throw new Error("Missing required environment variable: RESEND_API_KEY");
   }
 
-  const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: 465,
-      secure: true,
-      family: 4,
-      auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-  });
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
 /* POST /forgot-password */
 router.post("/forgot-password", async (req, res) => {
@@ -60,10 +42,12 @@ router.post("/forgot-password", async (req, res) => {
       const resetLink = `${baseUrl}/reset-password/${token}`;
       
       // Send email
-      const info = await transporter.sendMail({
-        from: `"Locara" <${process.env.SMTP_USER}>`,
-        to: user.email,
-        subject: "Reset your Locara password",
+
+      await resend.emails.send({
+      from: "Locara <onboarding@resend.dev>",
+      to: user.email,
+      subject: "Reset your Locara password",
+      
         html: `
           <div style="font-family: 'DM Sans', sans-serif; max-width: 520px; margin: 0 auto; padding: 40px 32px; background: #f6f5f7; border-radius: 16px;">
             <h1 style="font-size: 1.4rem; color: #1a1a2e; margin-bottom: 8px;">Reset your password</h1>
